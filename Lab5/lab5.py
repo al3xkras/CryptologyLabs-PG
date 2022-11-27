@@ -1,13 +1,12 @@
 from math import ceil,sqrt
-
-p = 1117
-g = 6
-h = 527
+from time import time
+from numpy import array
 
 class DiffieHellmanProtocol:
     def __init__(self, p, g):
         self.p=p
         self.g=g
+        assert DiffieHellmanProtocol.generator(g,p)
     
     def potega_m(self, m):
         """use python embedded function pow(a,b,n) === a^b (mod n)"""
@@ -17,7 +16,7 @@ class DiffieHellmanProtocol:
     def generator(g, p):
         #Z_p* order = phi(p) = p-1
         group_order = p-1
-        for i in range(1,g-1):
+        for i in range(1,p-1):
             if (pow(g,i,p)==1):
                 return False
         return pow(g,group_order,p)==1
@@ -45,7 +44,13 @@ class DiffieHellmanProtocol:
         """
         return DiffieHellmanProtocol.gcdExtended(a,p)[1]%p
     
-    def findPower(self, h):
+    def findPowerIterative(self,h):
+        for i in range(self.p):
+            if self.potega_m(i)==h:
+                return i
+        return None
+    
+    def findPowerShanksMethod(self, h):
         """
         Solve the equation h = g^x mod p given a prime number p.
         
@@ -70,9 +75,40 @@ class DiffieHellmanProtocol:
                 return a
         return None
 
+
+def compareExecutionTime(A,B,h,reps=1):
+    t1=[]
+    t2=[]
+    for i in range(reps):
+        time1=time()
+        A(h)
+        t1.append(time()-time1)
+        time2=time()
+        B(h)
+        t2.append(time()-time2)
+        
+    t1=array(t1,dtype=float)
+    t2=array(t2,dtype=float)
+    
+    print("Mean exec. time of %s:        %.8f"%(A.__name__,t1.mean()))
+    print("Std. of the exec. time of %s: %.8f"%(A.__name__,t1.std()))
+    print("Mean exec. time of %s:        %.8f"%(B.__name__,t2.mean()))
+    print("Std. of the exec. time of %s: %.8f"%(B.__name__,t2.std()))
+    
+    return [(t1.mean(),t1.std()),(t2.mean(),t2.std())]
+    
 if __name__=="__main__":
     dh = DiffieHellmanProtocol(p,g)
     # g^a = h
-    a = dh.findPower(h)
+    a = dh.findPowerShanksMethod(h)
     assert pow(g,a,p)==h
-    print(a)
+    
+    dh.findPowerIterative(110)
+    
+    dh1 = DiffieHellmanProtocol(10007,621)
+    
+    compareExecutionTime(dh1.findPowerIterative,dh1.findPowerShanksMethod,h,reps=10)
+    print("p =",p)
+    print("g =",g)
+    print("h =",h)
+    print("a =",a)

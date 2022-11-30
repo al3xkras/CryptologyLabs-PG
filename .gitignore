@@ -1,6 +1,7 @@
 /Lab3/**_decoded.txt
 **/text_out.txt
-
+**/__pycache__
+*.pdf
 /tmp
 **/.ipynb_checkpoints
 /Lab2/*.txt

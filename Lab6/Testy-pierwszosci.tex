@@ -1,0 +1,861 @@
+\documentclass[11pt]{article}
+
+    \usepackage[breakable]{tcolorbox}
+    \usepackage{parskip} % Stop auto-indenting (to mimic markdown behaviour)
+    
+
+    % Basic figure setup, for now with no caption control since it's done
+    % automatically by Pandoc (which extracts ![](path) syntax from Markdown).
+    \usepackage{graphicx}
+    % Maintain compatibility with old templates. Remove in nbconvert 6.0
+    \let\Oldincludegraphics\includegraphics
+    % Ensure that by default, figures have no caption (until we provide a
+    % proper Figure object with a Caption API and a way to capture that
+    % in the conversion process - todo).
+    \usepackage{caption}
+    \DeclareCaptionFormat{nocaption}{}
+    \captionsetup{format=nocaption,aboveskip=0pt,belowskip=0pt}
+
+    \usepackage{float}
+    \floatplacement{figure}{H} % forces figures to be placed at the correct location
+    \usepackage{xcolor} % Allow colors to be defined
+    \usepackage{enumerate} % Needed for markdown enumerations to work
+    \usepackage{geometry} % Used to adjust the document margins
+    \usepackage{amsmath} % Equations
+    \usepackage{amssymb} % Equations
+    \usepackage{textcomp} % defines textquotesingle
+    % Hack from http://tex.stackexchange.com/a/47451/13684:
+    \AtBeginDocument{%
+        \def\PYZsq{\textquotesingle}% Upright quotes in Pygmentized code
+    }
+    \usepackage{upquote} % Upright quotes for verbatim code
+    \usepackage{eurosym} % defines \euro
+
+    \usepackage{iftex}
+    \ifPDFTeX
+        \usepackage[T1]{fontenc}
+        \IfFileExists{alphabeta.sty}{
+              \usepackage{alphabeta}
+          }{
+              \usepackage[mathletters]{ucs}
+              \usepackage[utf8x]{inputenc}
+          }
+    \else
+        \usepackage{fontspec}
+        \usepackage{unicode-math}
+    \fi
+
+    \usepackage{fancyvrb} % verbatim replacement that allows latex
+    \usepackage{grffile} % extends the file name processing of package graphics 
+                         % to support a larger range
+    \makeatletter % fix for old versions of grffile with XeLaTeX
+    \@ifpackagelater{grffile}{2019/11/01}
+    {
+      % Do nothing on new versions
+    }
+    {
+      \def\Gread@@xetex#1{%
+        \IfFileExists{"\Gin@base".bb}%
+        {\Gread@eps{\Gin@base.bb}}%
+        {\Gread@@xetex@aux#1}%
+      }
+    }
+    \makeatother
+    \usepackage[Export]{adjustbox} % Used to constrain images to a maximum size
+    \adjustboxset{max size={0.9\linewidth}{0.9\paperheight}}
+
+    % The hyperref package gives us a pdf with properly built
+    % internal navigation ('pdf bookmarks' for the table of contents,
+    % internal cross-reference links, web links for URLs, etc.)
+    \usepackage{hyperref}
+    % The default LaTeX title has an obnoxious amount of whitespace. By default,
+    % titling removes some of it. It also provides customization options.
+    \usepackage{titling}
+    \usepackage{longtable} % longtable support required by pandoc >1.10
+    \usepackage{booktabs}  % table support for pandoc > 1.12.2
+    \usepackage{array}     % table support for pandoc >= 2.11.3
+    \usepackage{calc}      % table minipage width calculation for pandoc >= 2.11.1
+    \usepackage[inline]{enumitem} % IRkernel/repr support (it uses the enumerate* environment)
+    \usepackage[normalem]{ulem} % ulem is needed to support strikethroughs (\sout)
+                                % normalem makes italics be italics, not underlines
+    \usepackage{mathrsfs}
+    
+
+    
+    % Colors for the hyperref package
+    \definecolor{urlcolor}{rgb}{0,.145,.698}
+    \definecolor{linkcolor}{rgb}{.71,0.21,0.01}
+    \definecolor{citecolor}{rgb}{.12,.54,.11}
+
+    % ANSI colors
+    \definecolor{ansi-black}{HTML}{3E424D}
+    \definecolor{ansi-black-intense}{HTML}{282C36}
+    \definecolor{ansi-red}{HTML}{E75C58}
+    \definecolor{ansi-red-intense}{HTML}{B22B31}
+    \definecolor{ansi-green}{HTML}{00A250}
+    \definecolor{ansi-green-intense}{HTML}{007427}
+    \definecolor{ansi-yellow}{HTML}{DDB62B}
+    \definecolor{ansi-yellow-intense}{HTML}{B27D12}
+    \definecolor{ansi-blue}{HTML}{208FFB}
+    \definecolor{ansi-blue-intense}{HTML}{0065CA}
+    \definecolor{ansi-magenta}{HTML}{D160C4}
+    \definecolor{ansi-magenta-intense}{HTML}{A03196}
+    \definecolor{ansi-cyan}{HTML}{60C6C8}
+    \definecolor{ansi-cyan-intense}{HTML}{258F8F}
+    \definecolor{ansi-white}{HTML}{C5C1B4}
+    \definecolor{ansi-white-intense}{HTML}{A1A6B2}
+    \definecolor{ansi-default-inverse-fg}{HTML}{FFFFFF}
+    \definecolor{ansi-default-inverse-bg}{HTML}{000000}
+
+    % common color for the border for error outputs.
+    \definecolor{outerrorbackground}{HTML}{FFDFDF}
+
+    % commands and environments needed by pandoc snippets
+    % extracted from the output of `pandoc -s`
+    \providecommand{\tightlist}{%
+      \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+    \DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+    % Add ',fontsize=\small' for more characters per line
+    \newenvironment{Shaded}{}{}
+    \newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
+    \newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.56,0.13,0.00}{{#1}}}
+    \newcommand{\DecValTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\FloatTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\CharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\StringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\CommentTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textit{{#1}}}}
+    \newcommand{\OtherTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{{#1}}}
+    \newcommand{\AlertTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+    \newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.02,0.16,0.49}{{#1}}}
+    \newcommand{\RegionMarkerTok}[1]{{#1}}
+    \newcommand{\ErrorTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+    \newcommand{\NormalTok}[1]{{#1}}
+    
+    % Additional commands for more recent versions of Pandoc
+    \newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.53,0.00,0.00}{{#1}}}
+    \newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.73,0.40,0.53}{{#1}}}
+    \newcommand{\ImportTok}[1]{{#1}}
+    \newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.73,0.13,0.13}{\textit{{#1}}}}
+    \newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\VariableTok}[1]{\textcolor[rgb]{0.10,0.09,0.49}{{#1}}}
+    \newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
+    \newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.40,0.40,0.40}{{#1}}}
+    \newcommand{\BuiltInTok}[1]{{#1}}
+    \newcommand{\ExtensionTok}[1]{{#1}}
+    \newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.74,0.48,0.00}{{#1}}}
+    \newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.49,0.56,0.16}{{#1}}}
+    \newcommand{\InformationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\WarningTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    
+    
+    % Define a nice break command that doesn't care if a line doesn't already
+    % exist.
+    \def\br{\hspace*{\fill} \\* }
+    % Math Jax compatibility definitions
+    \def\gt{>}
+    \def\lt{<}
+    \let\Oldtex\TeX
+    \let\Oldlatex\LaTeX
+    \renewcommand{\TeX}{\textrm{\Oldtex}}
+    \renewcommand{\LaTeX}{\textrm{\Oldlatex}}
+    % Document parameters
+    % Document title
+    \title{Kryptologia: Testy pierwszości}
+    \author{Alexander Krasovskiy \\ Aleksandra Laskowska \\ Sandra Szczepańska}
+    \date{30 listopada 2022}
+    
+    
+% Pygments definitions
+\makeatletter
+\def\PY@reset{\let\PY@it=\relax \let\PY@bf=\relax%
+    \let\PY@ul=\relax \let\PY@tc=\relax%
+    \let\PY@bc=\relax \let\PY@ff=\relax}
+\def\PY@tok#1{\csname PY@tok@#1\endcsname}
+\def\PY@toks#1+{\ifx\relax#1\empty\else%
+    \PY@tok{#1}\expandafter\PY@toks\fi}
+\def\PY@do#1{\PY@bc{\PY@tc{\PY@ul{%
+    \PY@it{\PY@bf{\PY@ff{#1}}}}}}}
+\def\PY#1#2{\PY@reset\PY@toks#1+\relax+\PY@do{#2}}
+
+\@namedef{PY@tok@w}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.73,0.73}{##1}}}
+\@namedef{PY@tok@c}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@cp}{\def\PY@tc##1{\textcolor[rgb]{0.61,0.40,0.00}{##1}}}
+\@namedef{PY@tok@k}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kp}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kt}{\def\PY@tc##1{\textcolor[rgb]{0.69,0.00,0.25}{##1}}}
+\@namedef{PY@tok@o}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@ow}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.67,0.13,1.00}{##1}}}
+\@namedef{PY@tok@nb}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@nf}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@nc}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@nn}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@ne}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.80,0.25,0.22}{##1}}}
+\@namedef{PY@tok@nv}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@no}{\def\PY@tc##1{\textcolor[rgb]{0.53,0.00,0.00}{##1}}}
+\@namedef{PY@tok@nl}{\def\PY@tc##1{\textcolor[rgb]{0.46,0.46,0.00}{##1}}}
+\@namedef{PY@tok@ni}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.44,0.44,0.44}{##1}}}
+\@namedef{PY@tok@na}{\def\PY@tc##1{\textcolor[rgb]{0.41,0.47,0.13}{##1}}}
+\@namedef{PY@tok@nt}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@nd}{\def\PY@tc##1{\textcolor[rgb]{0.67,0.13,1.00}{##1}}}
+\@namedef{PY@tok@s}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sd}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@si}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.64,0.35,0.47}{##1}}}
+\@namedef{PY@tok@se}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.67,0.36,0.12}{##1}}}
+\@namedef{PY@tok@sr}{\def\PY@tc##1{\textcolor[rgb]{0.64,0.35,0.47}{##1}}}
+\@namedef{PY@tok@ss}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@sx}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@m}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@gh}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
+\@namedef{PY@tok@gu}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.50,0.00,0.50}{##1}}}
+\@namedef{PY@tok@gd}{\def\PY@tc##1{\textcolor[rgb]{0.63,0.00,0.00}{##1}}}
+\@namedef{PY@tok@gi}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.52,0.00}{##1}}}
+\@namedef{PY@tok@gr}{\def\PY@tc##1{\textcolor[rgb]{0.89,0.00,0.00}{##1}}}
+\@namedef{PY@tok@ge}{\let\PY@it=\textit}
+\@namedef{PY@tok@gs}{\let\PY@bf=\textbf}
+\@namedef{PY@tok@gp}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
+\@namedef{PY@tok@go}{\def\PY@tc##1{\textcolor[rgb]{0.44,0.44,0.44}{##1}}}
+\@namedef{PY@tok@gt}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.27,0.87}{##1}}}
+\@namedef{PY@tok@err}{\def\PY@bc##1{{\setlength{\fboxsep}{\string -\fboxrule}\fcolorbox[rgb]{1.00,0.00,0.00}{1,1,1}{\strut ##1}}}}
+\@namedef{PY@tok@kc}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kd}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kn}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kr}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@bp}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@fm}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@vc}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@vg}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@vi}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@vm}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@sa}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sb}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sc}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@dl}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@s2}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sh}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@s1}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@mb}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mf}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mh}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mi}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@il}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mo}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@ch}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@cm}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@cpf}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@c1}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@cs}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+
+\def\PYZbs{\char`\\}
+\def\PYZus{\char`\_}
+\def\PYZob{\char`\{}
+\def\PYZcb{\char`\}}
+\def\PYZca{\char`\^}
+\def\PYZam{\char`\&}
+\def\PYZlt{\char`\<}
+\def\PYZgt{\char`\>}
+\def\PYZsh{\char`\#}
+\def\PYZpc{\char`\%}
+\def\PYZdl{\char`\$}
+\def\PYZhy{\char`\-}
+\def\PYZsq{\char`\'}
+\def\PYZdq{\char`\"}
+\def\PYZti{\char`\~}
+% for compatibility with earlier versions
+\def\PYZat{@}
+\def\PYZlb{[}
+\def\PYZrb{]}
+\makeatother
+
+
+    % For linebreaks inside Verbatim environment from package fancyvrb. 
+    \makeatletter
+        \newbox\Wrappedcontinuationbox 
+        \newbox\Wrappedvisiblespacebox 
+        \newcommand*\Wrappedvisiblespace {\textcolor{red}{\textvisiblespace}} 
+        \newcommand*\Wrappedcontinuationsymbol {\textcolor{red}{\llap{\tiny$\m@th\hookrightarrow$}}} 
+        \newcommand*\Wrappedcontinuationindent {3ex } 
+        \newcommand*\Wrappedafterbreak {\kern\Wrappedcontinuationindent\copy\Wrappedcontinuationbox} 
+        % Take advantage of the already applied Pygments mark-up to insert 
+        % potential linebreaks for TeX processing. 
+        %        {, <, #, %, $, ' and ": go to next line. 
+        %        _, }, ^, &, >, - and ~: stay at end of broken line. 
+        % Use of \textquotesingle for straight quote. 
+        \newcommand*\Wrappedbreaksatspecials {% 
+            \def\PYGZus{\discretionary{\char`\_}{\Wrappedafterbreak}{\char`\_}}% 
+            \def\PYGZob{\discretionary{}{\Wrappedafterbreak\char`\{}{\char`\{}}% 
+            \def\PYGZcb{\discretionary{\char`\}}{\Wrappedafterbreak}{\char`\}}}% 
+            \def\PYGZca{\discretionary{\char`\^}{\Wrappedafterbreak}{\char`\^}}% 
+            \def\PYGZam{\discretionary{\char`\&}{\Wrappedafterbreak}{\char`\&}}% 
+            \def\PYGZlt{\discretionary{}{\Wrappedafterbreak\char`\<}{\char`\<}}% 
+            \def\PYGZgt{\discretionary{\char`\>}{\Wrappedafterbreak}{\char`\>}}% 
+            \def\PYGZsh{\discretionary{}{\Wrappedafterbreak\char`\#}{\char`\#}}% 
+            \def\PYGZpc{\discretionary{}{\Wrappedafterbreak\char`\%}{\char`\%}}% 
+            \def\PYGZdl{\discretionary{}{\Wrappedafterbreak\char`\$}{\char`\$}}% 
+            \def\PYGZhy{\discretionary{\char`\-}{\Wrappedafterbreak}{\char`\-}}% 
+            \def\PYGZsq{\discretionary{}{\Wrappedafterbreak\textquotesingle}{\textquotesingle}}% 
+            \def\PYGZdq{\discretionary{}{\Wrappedafterbreak\char`\"}{\char`\"}}% 
+            \def\PYGZti{\discretionary{\char`\~}{\Wrappedafterbreak}{\char`\~}}% 
+        } 
+        % Some characters . , ; ? ! / are not pygmentized. 
+        % This macro makes them "active" and they will insert potential linebreaks 
+        \newcommand*\Wrappedbreaksatpunct {% 
+            \lccode`\~`\.\lowercase{\def~}{\discretionary{\hbox{\char`\.}}{\Wrappedafterbreak}{\hbox{\char`\.}}}% 
+            \lccode`\~`\,\lowercase{\def~}{\discretionary{\hbox{\char`\,}}{\Wrappedafterbreak}{\hbox{\char`\,}}}% 
+            \lccode`\~`\;\lowercase{\def~}{\discretionary{\hbox{\char`\;}}{\Wrappedafterbreak}{\hbox{\char`\;}}}% 
+            \lccode`\~`\:\lowercase{\def~}{\discretionary{\hbox{\char`\:}}{\Wrappedafterbreak}{\hbox{\char`\:}}}% 
+            \lccode`\~`\?\lowercase{\def~}{\discretionary{\hbox{\char`\?}}{\Wrappedafterbreak}{\hbox{\char`\?}}}% 
+            \lccode`\~`\!\lowercase{\def~}{\discretionary{\hbox{\char`\!}}{\Wrappedafterbreak}{\hbox{\char`\!}}}% 
+            \lccode`\~`\/\lowercase{\def~}{\discretionary{\hbox{\char`\/}}{\Wrappedafterbreak}{\hbox{\char`\/}}}% 
+            \catcode`\.\active
+            \catcode`\,\active 
+            \catcode`\;\active
+            \catcode`\:\active
+            \catcode`\?\active
+            \catcode`\!\active
+            \catcode`\/\active 
+            \lccode`\~`\~ 	
+        }
+    \makeatother
+
+    \let\OriginalVerbatim=\Verbatim
+    \makeatletter
+    \renewcommand{\Verbatim}[1][1]{%
+        %\parskip\z@skip
+        \sbox\Wrappedcontinuationbox {\Wrappedcontinuationsymbol}%
+        \sbox\Wrappedvisiblespacebox {\FV@SetupFont\Wrappedvisiblespace}%
+        \def\FancyVerbFormatLine ##1{\hsize\linewidth
+            \vtop{\raggedright\hyphenpenalty\z@\exhyphenpenalty\z@
+                \doublehyphendemerits\z@\finalhyphendemerits\z@
+                \strut ##1\strut}%
+        }%
+        % If the linebreak is at a space, the latter will be displayed as visible
+        % space at end of first line, and a continuation symbol starts next line.
+        % Stretch/shrink are however usually zero for typewriter font.
+        \def\FV@Space {%
+            \nobreak\hskip\z@ plus\fontdimen3\font minus\fontdimen4\font
+            \discretionary{\copy\Wrappedvisiblespacebox}{\Wrappedafterbreak}
+            {\kern\fontdimen2\font}%
+        }%
+        
+        % Allow breaks at special characters using \PYG... macros.
+        \Wrappedbreaksatspecials
+        % Breaks at punctuation characters . , ; ? ! and / need catcode=\active 	
+        \OriginalVerbatim[#1,codes*=\Wrappedbreaksatpunct]%
+    }
+    \makeatother
+
+    % Exact colors from NB
+    \definecolor{incolor}{HTML}{303F9F}
+    \definecolor{outcolor}{HTML}{D84315}
+    \definecolor{cellborder}{HTML}{CFCFCF}
+    \definecolor{cellbackground}{HTML}{F7F7F7}
+    
+    % prompt
+    \makeatletter
+    \newcommand{\boxspacing}{\kern\kvtcb@left@rule\kern\kvtcb@boxsep}
+    \makeatother
+    \newcommand{\prompt}[4]{
+        {\ttfamily\llap{{\color{#2}[#3]:\hspace{3pt}#4}}\vspace{-\baselineskip}}
+    }
+    
+
+    
+    % Prevent overflowing lines due to hard-to-break entities
+    \sloppy 
+    % Setup hyperref package
+    \hypersetup{
+      breaklinks=true,  % so long urls are correctly broken across lines
+      colorlinks=true,
+      urlcolor=urlcolor,
+      linkcolor=linkcolor,
+      citecolor=citecolor,
+      }
+    % Slightly bigger margins than the latex defaults
+    
+    \geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
+    \newtheorem{thm}{Twierdzenie}[section]
+    
+
+\begin{document}
+    
+    \maketitle
+ \begin{section}{Wstęp}
+    W niniejszym sprawozdaniu przedstawione zostały trzy testy pierwszości: algorytm naiwny, algorytm Fermata oraz algorytm Miler-Rabina. Aby przetestować każdą z metod użyliśmy poniższego zbioru: \\
+    \texttt{a = [2,3, 3*17, 101, 556, 1013, 10099, 800001, 1007*101,103141, 
+     1016783, 103141*1016783, 10103099, 107707549, 10770592813, 
+     107705911723, 245709213523*5299871829441939, 
+     5059489012128901*1298582838728545,
+    4547337172376300111955330758342147474062293202868155909489,
+    4547337172376300111955330758342147474062293202868155909393
+    ]} \\
+    Wyniki zostały przeanalizowane poniżej.
+\end{section}   
+    \begin{section}{Algorytm naiwny}
+    Algorytm sprawdza czy dana liczba jest liczbą pierwszą bazując na funkcji isPrime. Aby sprawdzić czy dowolnie wybrana liczba n jest pierwsza należy sprawdzić, czy ma ona jakikolwiek dzielnik różny od 1 i od niej samej. Można to zrobić dzieląc n kolejno przez 2, przez trzy i tak dalej aż do n-1. Zadaniem zdefiniowanej funkcji jest w pierwszej kolejności sprawdzenie warunku czy wybrana liczba jest mniejsza lub równa 1, jeśli tak to wynikiem funkcji jest wartość logiczna False, co oznacza że liczba nie jest pierwsza. Jeśli warunek pierwszy jest sprawdzony funkcja przechodzi do sprawdzenia podzielności wprowadzonej liczby przez liczby od 2 do n-1. W przypadku kiedy zostanie znaleziony dzielnik wynikiem funkcji jest wartość logiczna False. Wówczas funkcja kończy swoje działanie. Jeśli dzielnik nie zostanie znaleziony wynikiem funkcji jest wartość logiczna True. Funkcja kończy działanie znajdując liczbę pierwszą. \\
+    Do testu algorytmu użyto zestawu wybranych liczb pierwszych i złożonych, wyniki przedstawiają się następująco. 
+\end{section}
+    \begin{Verbatim}[commandchars=\\\{\}]
+Number 3 is prime. Execution time is: 0.00286102294921875 ms.
+Number 17 is prime. Execution time is: 0.0030994415283203125 ms.
+Number 101 is prime. Execution time is: 0.0016689300537109375 ms.
+Number 1013 is prime. Execution time is: 0.0016689300537109375 ms.
+Number 10099 is prime. Execution time is: 0.0019073486328125 ms.
+Number 103141 is prime. Execution time is: 0.00095367431640625 ms.
+Number 1016783 is prime. Execution time is: 0.0011920928955078125 ms.
+Number 10103099 is prime. Execution time is: 0.00095367431640625 ms.
+Number 107707549 is prime. Execution time is: 0.0021457672119140625 ms.
+Number 10770592813 is prime. Execution time is: 0.003814697265625 ms.
+Number 107705911723 is prime. Execution time is: 0.0019073486328125 ms.
+Number 4547337172376300111955330758342147474062293202868155909489 is prime.\\Execution time is: 0.003814697265625 ms.
+Number 2 is composite. Execution time is: 0.0021457672119140625 ms.
+Number 51 is prime. Execution time is: 0.0019073486328125 ms.
+Number 556 is composite. Execution time is: 0.0021457672119140625 ms.
+Number 800001 is prime. Execution time is: 0.0021457672119140625 ms.
+Number 101707 is prime. Execution time is: 0.0016689300537109375 ms.
+Number 104872015403 is prime. Execution time is: 0.00286102294921875 ms.
+Number 1302227338984882027682141097 is prime.\\Execution time is: 0.0026226043701171875 ms.
+Number 6570165603886230104742488179045 is prime.\\Execution time is: 0.0030994415283203125 ms.
+Number 4547337172376300111955330758342147474062293202868155909393 is prime.\\Execution time is: 0.0030994415283203125 ms.
+\end{Verbatim}
+    \begin{section}{Metoda Fermata}
+        Poniższa metoda działa na podstawie Małego Twierdzenia Fermata:
+        \begin{thm}
+            Jeżeli $p$ jest liczbą pierwszą, to dla dowolnej liczby całkowitej $a: a p - a \mod{p} = 0$ (lub w postaci $ap - 1 \mod{p} = 1$).
+        \end{thm}
+        Dla danego zbioru $s = \{0,1,...,s-1\}$ algorytm liczy $t^{a-1}\mod{a}$ s razy, gdzie $t$ jest liczbą pseudolosową z przedziału $(2,a-2)$ i sprawdza czy wynik jest równy 1. Jeśli za każdym razem $t^{a-1}\mod{a} = 1$, to zgodnie z powyższym twierdzeniem $a$ jest liczbą pierwszą.
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{23}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k}{def} \PY{n+nf}{isPrime}\PY{p}{(}\PY{n}{a}\PY{p}{,}\PY{n}{s}\PY{p}{)}\PY{p}{:}
+    \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{s}\PY{p}{)}\PY{p}{:}
+        \PY{k}{if} \PY{n}{a} \PY{o}{\PYZlt{}}\PY{o}{=} \PY{l+m+mi}{3}\PY{p}{:}
+            \PY{k}{return} \PY{k+kc}{True}
+        \PY{k}{else}\PY{p}{:}
+            \PY{n}{t} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{random}\PY{o}{.}\PY{n}{randint}\PY{p}{(}\PY{l+m+mi}{2}\PY{p}{,}\PY{p}{(}\PY{n}{a}\PY{o}{\PYZhy{}}\PY{l+m+mi}{2}\PY{p}{)}\PY{p}{)}
+            \PY{k}{if} \PY{n+nb}{pow}\PY{p}{(}\PY{n}{t}\PY{p}{,}\PY{p}{(}\PY{n}{a}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{)}\PY{p}{,}\PY{n}{a}\PY{p}{)} \PY{o}{!=} \PY{l+m+mi}{1}\PY{p}{:}
+                \PY{k}{return} \PY{k+kc}{False}
+        \PY{k}{return} \PY{k+kc}{True}
+\end{Verbatim}
+\end{tcolorbox}
+
+Wyniki wyglądają następująco:
+\begin{Verbatim}[commandchars=\\\{\}]
+Liczba 2 jest liczbą pierwszą. Dla s= 5 czas wykonania algorytmu wynosi
+0.0050067901611328125 ms.
+Liczba 3 jest liczbą pierwszą. Dla s= 5 czas wykonania algorytmu wynosi
+0.005245208740234375 ms.
+Liczba 51 jest liczbą złożoną. Dla s= 5 czas wykonania algorytmu wynosi
+15.874862670898438 ms.
+Liczba 101 jest liczbą pierwszą. Dla s= 5 czas wykonania algorytmu wynosi
+0.04673004150390625 ms.
+Liczba 556 jest liczbą złożoną. Dla s= 5 czas wykonania algorytmu wynosi
+0.017881393432617188 ms.
+Liczba 1013 jest liczbą pierwszą. Dla s= 5 czas wykonania algorytmu wynosi
+0.011920928955078125 ms.
+Liczba 10099 jest liczbą pierwszą. Dla s= 5 czas wykonania algorytmu wynosi
+0.009059906005859375 ms.
+Liczba 800001 jest liczbą złożoną. Dla s= 5 czas wykonania algorytmu wynosi
+0.010967254638671875 ms.
+Liczba 101707 jest liczbą złożoną. Dla s= 5 czas wykonania algorytmu wynosi
+0.010013580322265625 ms.
+Liczba 103141 jest liczbą pierwszą. Dla s= 5 czas wykonania algorytmu wynosi
+0.010013580322265625 ms.
+Liczba 1016783 jest liczbą pierwszą. Dla s= 5 czas wykonania algorytmu wynosi
+0.010013580322265625 ms.
+Liczba 104872015403 jest liczbą złożoną. Dla s= 5 czas wykonania algorytmu
+wynosi 0.03886222839355469 ms.
+Liczba 10103099 jest liczbą pierwszą. Dla s= 5 czas wykonania algorytmu wynosi
+0.011920928955078125 ms.
+Liczba 107707549 jest liczbą pierwszą. Dla s= 5 czas wykonania algorytmu wynosi
+0.012159347534179688 ms.
+Liczba 10770592813 jest liczbą pierwszą. Dla s= 5 czas wykonania algorytmu
+wynosi 0.02002716064453125 ms.
+Liczba 107705911723 jest liczbą pierwszą. Dla s= 5 czas wykonania algorytmu
+wynosi 0.0209808349609375 ms....
+    \end{Verbatim}
+    Algorytm Fermata prawidłowo pogrupował liczby ze zbioru $a$ na pierwsze oraz złożone. Czas wykonania algorytmu dla większych liczb jest relatywnie wysoki.
+    \end{section}
+    
+    \begin{section}{Metoda Miler-Rabina}
+        Miller-Rabin test: \newline
+        - Input: n \textgreater{} 2, an odd integer to be tested for primality; \newline
+        -k, a parameter that determines the accuracy of the test \newline
+        - Output: composite if n is composite, otherwise probably prime \newline
+   - write n − 1 as 2s·d with d odd by factoring powers of 2 from n − 1 \newline
+   - LOOP: repeat k times: - pick a randomly in the range {[}2, n − 1{]} \newline
+   - x ← a d mod n \newline
+   - if x = 1 or x = n − 1 then do next LOOP \newline
+   - repeat s − 1 times:\newline
+    - x ← x 2 mod n \newline
+    - if x = 1 then return composite \newline
+    - if x = n − 1 then do next LOOP \newline
+   - return composite \newline
+   - return probably prime
+       \vspace{120px}
+   
+       \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+   \prompt{In}{incolor}{28}{\boxspacing}
+   \begin{Verbatim}[commandchars=\\\{\}]
+   \PY{k}{def} \PY{n+nf}{is\PYZus{}prime\PYZus{}miller\PYZus{}rabin}\PY{p}{(}\PY{n}{n}\PY{p}{,} \PY{n}{k}\PY{p}{)}\PY{p}{:}
+   
+       \PY{k}{if} \PY{o+ow}{not} \PY{n}{n}\PY{o}{\PYZam{}}\PY{l+m+mi}{1} \PY{o+ow}{or} \PY{n}{n}\PY{o}{==}\PY{l+m+mi}{1}\PY{p}{:}
+           \PY{k}{return} \PY{k+kc}{False}
+       \PY{n}{s}\PY{o}{=}\PY{l+m+mi}{1}
+       \PY{n}{d}\PY{o}{=}\PY{n}{n}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}
+       \PY{k}{while} \PY{o+ow}{not} \PY{n}{d}\PY{o}{\PYZam{}}\PY{l+m+mi}{1}\PY{p}{:}
+           \PY{n}{s}\PY{o}{*}\PY{o}{=}\PY{l+m+mi}{2}
+           \PY{n}{d}\PY{o}{/}\PY{o}{/}\PY{o}{=}\PY{l+m+mi}{2}
+       \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{k}\PY{p}{)}\PY{p}{:}
+           \PY{n}{a} \PY{o}{=} \PY{n}{randint}\PY{p}{(}\PY{l+m+mi}{2}\PY{p}{,}\PY{n}{n}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{)}
+           \PY{n}{x} \PY{o}{=} \PY{n+nb}{pow}\PY{p}{(}\PY{n}{a}\PY{p}{,}\PY{n}{d}\PY{p}{,}\PY{n}{n}\PY{p}{)}
+           \PY{k}{if} \PY{n}{x}\PY{o}{==}\PY{l+m+mi}{1} \PY{o+ow}{or} \PY{n}{x}\PY{o}{==}\PY{n}{n}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{:}
+               \PY{k}{continue}
+           \PY{k}{for} \PY{n}{j} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{s}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{)}\PY{p}{:}
+               \PY{k}{if} \PY{n}{stop}\PY{p}{(}\PY{p}{)}\PY{p}{:} 
+                   \PY{k}{return}
+               \PY{n}{x} \PY{o}{=} \PY{n+nb}{pow}\PY{p}{(}\PY{n}{x}\PY{p}{,}\PY{l+m+mi}{2}\PY{p}{,}\PY{n}{n}\PY{p}{)}
+               \PY{k}{if} \PY{n}{x}\PY{o}{==}\PY{l+m+mi}{1}\PY{p}{:}
+                   \PY{k}{return} \PY{k+kc}{False}
+               \PY{k}{if} \PY{n}{x}\PY{o}{==}\PY{n}{n}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{:}
+                   \PY{k}{break}
+           \PY{k}{if} \PY{n}{x}\PY{o}{==}\PY{n}{n}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{:}
+               \PY{k}{continue}
+           \PY{k}{return} \PY{k+kc}{False}
+       \PY{k}{return} \PY{k+kc}{True}
+   \end{Verbatim}
+   \end{tcolorbox}
+       \vspace{20px}
+       Method compareExecutionTime: \newline
+       - A - a primality test function \newline
+       - B - a primality test function \newline
+       - reps - how many times to repeat the test\newline
+        - timelimit - maximum execution time - kwargs \newline
+        - arguments that are used by methods A and B \newline
+        - Variables: \newline
+        - res - execution result \newline
+        - r1 - result of A(kwargs) or None \newline
+        - r2 = result of B(kwargs) or None \newline
+        - each time test is executed in a separate Thread, in order to make it possible to stop the method
+   invocation after a fixed time. \newline
+   - a mean execution time and the standard
+   deviation is computed after executing all tests. \newline
+   - return value: \newline
+   - mean1 - the mean of the algorithm A execution time \newline
+   - std1 - the standard deviation of the algorithm A execution time \newline
+   - mean2 - the mean of the algorithm B execution time \newline
+   - std2 - the standard deviation of the algorithm B execution time \newline
+   - res - execution result (assuming A(kwargs)== B(kwargs))
+   
+   \vspace{80px}
+       \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+   \prompt{In}{incolor}{31}{\boxspacing}
+   \begin{Verbatim}[commandchars=\\\{\}]
+   \PY{k}{def} \PY{n+nf}{compareExecutionTime}\PY{p}{(}\PY{n}{A}\PY{p}{,} \PY{n}{B}\PY{p}{,} \PY{n}{reps}\PY{o}{=}\PY{l+m+mi}{1}\PY{p}{,} \PY{n}{timelimit}\PY{o}{=}\PY{l+m+mi}{3}\PY{p}{,} \PY{o}{*}\PY{o}{*}\PY{n}{kwargs}\PY{p}{)}\PY{p}{:}
+       \PY{n}{t1} \PY{o}{=} \PY{p}{[}\PY{p}{]}
+       \PY{n}{t2} \PY{o}{=} \PY{p}{[}\PY{p}{]}
+       \PY{n}{res}\PY{o}{=}\PY{k+kc}{None}
+       \PY{n}{r1}\PY{o}{=}\PY{k+kc}{None}
+       \PY{n}{r2}\PY{o}{=}\PY{k+kc}{None}
+       \PY{k}{def} \PY{n+nf}{f1}\PY{p}{(}\PY{o}{*}\PY{o}{*}\PY{n}{kwargs}\PY{p}{)}\PY{p}{:}
+           \PY{k}{nonlocal} \PY{n}{r1}\PY{p}{,}\PY{n}{t1}
+           \PY{n}{r1}\PY{o}{=}\PY{n}{A}\PY{p}{(}\PY{o}{*}\PY{o}{*}\PY{n}{kwargs}\PY{p}{)}
+           \PY{k}{if} \PY{o+ow}{not} \PY{n}{stop}\PY{p}{(}\PY{p}{)}\PY{p}{:}
+               \PY{n}{t1}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{time}\PY{p}{(}\PY{p}{)} \PY{o}{\PYZhy{}} \PY{n}{time1}\PY{p}{)}
+       \PY{k}{def} \PY{n+nf}{f2}\PY{p}{(}\PY{o}{*}\PY{o}{*}\PY{n}{kwargs}\PY{p}{)}\PY{p}{:}
+           \PY{k}{nonlocal} \PY{n}{r2}\PY{p}{,}\PY{n}{t2}
+           \PY{n}{r2}\PY{o}{=}\PY{n}{B}\PY{p}{(}\PY{o}{*}\PY{o}{*}\PY{n}{kwargs}\PY{p}{)}
+           \PY{k}{if} \PY{o+ow}{not} \PY{n}{stop}\PY{p}{(}\PY{p}{)}\PY{p}{:}
+               \PY{n}{t2}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{time}\PY{p}{(}\PY{p}{)} \PY{o}{\PYZhy{}} \PY{n}{time2}\PY{p}{)}
+       \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{reps}\PY{p}{)}\PY{p}{:}
+           \PY{n}{r1}\PY{p}{,}\PY{n}{r2}\PY{o}{=}\PY{k+kc}{None}\PY{p}{,}\PY{k+kc}{None}
+           \PY{n}{time1} \PY{o}{=} \PY{n}{time}\PY{p}{(}\PY{p}{)}
+           
+           \PY{n}{l}\PY{o}{=}\PY{n+nb}{len}\PY{p}{(}\PY{n}{t1}\PY{p}{)}
+           
+           \PY{n}{p1} \PY{o}{=} \PY{n}{Thread}\PY{p}{(}\PY{n}{target} \PY{o}{=} \PY{n}{f1}\PY{p}{,} \PY{n}{kwargs} \PY{o}{=} \PY{n}{kwargs}\PY{p}{)}
+           \PY{n}{p1}\PY{o}{.}\PY{n}{start}\PY{p}{(}\PY{p}{)}
+           \PY{n}{p1}\PY{o}{.}\PY{n}{join}\PY{p}{(}\PY{n}{timeout} \PY{o}{=} \PY{n}{timelimit}\PY{p}{)}
+           \PY{k}{while} \PY{n}{time}\PY{p}{(}\PY{p}{)}\PY{o}{\PYZhy{}}\PY{n}{time1}\PY{o}{\PYZlt{}}\PY{n}{timelimit} \PY{o+ow}{and} \PY{n}{p1}\PY{o}{.}\PY{n}{is\PYZus{}alive}\PY{p}{(}\PY{p}{)}\PY{p}{:} \PY{k}{pass}
+           \PY{n}{ev}\PY{o}{.}\PY{n}{set}\PY{p}{(}\PY{p}{)}
+           \PY{k}{while} \PY{n}{p1}\PY{o}{.}\PY{n}{is\PYZus{}alive}\PY{p}{(}\PY{p}{)}\PY{p}{:} \PY{k}{pass}
+           \PY{n}{ev}\PY{o}{.}\PY{n}{clear}\PY{p}{(}\PY{p}{)}
+           
+           \PY{k}{if} \PY{n+nb}{len}\PY{p}{(}\PY{n}{t1}\PY{p}{)}\PY{o}{==}\PY{n}{l}\PY{p}{:}
+               \PY{n}{t1}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{inf}\PY{p}{)}
+           
+           \PY{n}{l}\PY{o}{=}\PY{n+nb}{len}\PY{p}{(}\PY{n}{t2}\PY{p}{)}
+           \PY{n}{time2} \PY{o}{=} \PY{n}{time}\PY{p}{(}\PY{p}{)}
+           \PY{n}{p2} \PY{o}{=} \PY{n}{Thread}\PY{p}{(}\PY{n}{target} \PY{o}{=} \PY{n}{f2}\PY{p}{,} \PY{n}{kwargs} \PY{o}{=} \PY{n}{kwargs}\PY{p}{)}
+           \PY{n}{p2}\PY{o}{.}\PY{n}{start}\PY{p}{(}\PY{p}{)}
+           \PY{n}{p2}\PY{o}{.}\PY{n}{join}\PY{p}{(}\PY{n}{timeout} \PY{o}{=} \PY{n}{timelimit}\PY{p}{)}
+           \PY{k}{while} \PY{n}{time}\PY{p}{(}\PY{p}{)}\PY{o}{\PYZhy{}}\PY{n}{time2}\PY{o}{\PYZlt{}}\PY{n}{timelimit} \PY{o+ow}{and} \PY{n}{p2}\PY{o}{.}\PY{n}{is\PYZus{}alive}\PY{p}{(}\PY{p}{)}\PY{p}{:} \PY{k}{pass}
+           \PY{n}{ev}\PY{o}{.}\PY{n}{set}\PY{p}{(}\PY{p}{)}
+           \PY{k}{while} \PY{n}{p2}\PY{o}{.}\PY{n}{is\PYZus{}alive}\PY{p}{(}\PY{p}{)}\PY{p}{:} \PY{k}{pass}
+           \PY{n}{ev}\PY{o}{.}\PY{n}{clear}\PY{p}{(}\PY{p}{)}
+           
+           \PY{k}{if} \PY{n+nb}{len}\PY{p}{(}\PY{n}{t2}\PY{p}{)}\PY{o}{==}\PY{n}{l}\PY{p}{:}
+               \PY{n}{t2}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{inf}\PY{p}{)}
+           
+           \PY{k}{assert} \PY{n}{r1} \PY{o+ow}{is} \PY{k+kc}{None} \PY{o+ow}{or} \PY{n}{r2} \PY{o+ow}{is} \PY{k+kc}{None} \PY{o+ow}{or} \PY{n}{r1}\PY{o}{==}\PY{n}{r2}
+           \PY{k}{if} \PY{n}{res} \PY{o+ow}{is} \PY{k+kc}{None}\PY{p}{:}
+               \PY{n}{res}\PY{o}{=}\PY{n}{r1}
+           \PY{n}{r1}\PY{o}{=}\PY{k+kc}{None}
+           \PY{n}{r2}\PY{o}{=}\PY{k+kc}{None}
+       \PY{n}{t11} \PY{o}{=} \PY{n}{array}\PY{p}{(}\PY{n}{t1}\PY{p}{,} \PY{n}{dtype}\PY{o}{=}\PY{n+nb}{float}\PY{p}{)}
+       \PY{n}{t21} \PY{o}{=} \PY{n}{array}\PY{p}{(}\PY{n}{t2}\PY{p}{,} \PY{n}{dtype}\PY{o}{=}\PY{n+nb}{float}\PY{p}{)}
+       
+       \PY{k}{return} \PY{p}{[}\PY{p}{(}\PY{n}{t11}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{,} \PY{n}{t11}\PY{o}{.}\PY{n}{std}\PY{p}{(}\PY{p}{)}\PY{p}{)}\PY{p}{,} \PY{p}{(}\PY{n}{t21}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{,} \PY{n}{t21}\PY{o}{.}\PY{n}{std}\PY{p}{(}\PY{p}{)}\PY{p}{)}\PY{p}{,} \PY{n}{res}\PY{p}{]}
+   \end{Verbatim}
+   \end{tcolorbox}
+       \vspace{20px}
+       Execution time analysis: \newline
+       - Given two lists of prime and composite numbers \newline
+   - For each number:  \newline
+   - Check if a primality test function returns the expected value \newline
+   - Test the execution time \newline
+   - Print mean and standard deviation of the execution time for each number
+   
+       \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+   \prompt{In}{incolor}{36}{\boxspacing}
+   \begin{Verbatim}[commandchars=\\\{\}]
+   \PY{n}{prime}\PY{o}{=}\PY{p}{[}
+       \PY{l+m+mi}{3}\PY{p}{,}
+       \PY{l+m+mi}{17}\PY{p}{,}
+       \PY{l+m+mi}{101}\PY{p}{,}
+       \PY{l+m+mi}{1013}\PY{p}{,}
+       \PY{l+m+mi}{10099}\PY{p}{,}
+       \PY{l+m+mi}{103141}\PY{p}{,}
+       \PY{l+m+mi}{1016783}\PY{p}{,}
+       \PY{l+m+mi}{10103099}\PY{p}{,}
+       \PY{l+m+mi}{107707549}\PY{p}{,}
+       \PY{l+m+mi}{10770592813}\PY{p}{,}
+       \PY{l+m+mi}{107705911723}\PY{p}{,}
+       \PY{l+m+mi}{4547337172376300111955330758342147474062293202868155909489}
+   \PY{p}{]}
+   \PY{n}{composite}\PY{o}{=}\PY{p}{[}
+       \PY{l+m+mi}{2}\PY{p}{,}
+       \PY{l+m+mi}{3}\PY{o}{*}\PY{l+m+mi}{17}\PY{p}{,}
+       \PY{l+m+mi}{556}\PY{p}{,}
+       \PY{l+m+mi}{800001}\PY{p}{,}
+       \PY{l+m+mi}{1007}\PY{o}{*}\PY{l+m+mi}{101}\PY{p}{,}
+       \PY{l+m+mi}{103141}\PY{o}{*}\PY{l+m+mi}{1016783}\PY{p}{,}
+       \PY{l+m+mi}{245709213523}\PY{o}{*}\PY{l+m+mi}{5299871829441939}\PY{p}{,}
+       \PY{l+m+mi}{5059489012128901}\PY{o}{*}\PY{l+m+mi}{1298582838728545}\PY{p}{,}
+       \PY{l+m+mi}{4547337172376300111955330758342147474062293202868155909393}
+   \PY{p}{]}
+   
+   \PY{n}{algorithms}\PY{o}{=}\PY{p}{[}
+       \PY{n}{is\PYZus{}prime\PYZus{}miller\PYZus{}rabin}
+   \PY{p}{]}
+   \PY{n}{args}\PY{o}{=}\PY{p}{[}
+       \PY{p}{\PYZob{}}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{n}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{k}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:}\PY{l+m+mi}{1}\PY{p}{\PYZcb{}}
+   \PY{p}{]}
+       
+   
+   \PY{k}{def} \PY{n+nf}{execFor}\PY{p}{(}\PY{n}{algo}\PY{p}{,} \PY{n}{\PYZus{}n}\PY{p}{,} \PY{n}{expected}\PY{p}{,} \PY{o}{*}\PY{o}{*}\PY{n}{kwargs}\PY{p}{)}\PY{p}{:}
+       \PY{n}{A}\PY{o}{=}\PY{n}{algo}
+       \PY{n}{kw}\PY{o}{=}\PY{n+nb}{dict}\PY{p}{(}\PY{p}{)}
+       \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{n =}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{n}{\PYZus{}n}\PY{p}{)}
+       \PY{n}{kw}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{n}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{=}\PY{n}{\PYZus{}n}
+       \PY{n}{k}\PY{o}{=}\PY{n+nb}{min}\PY{p}{(}\PY{l+m+mi}{10000}\PY{p}{,}\PY{n+nb}{max}\PY{p}{(}\PY{l+m+mi}{5}\PY{p}{,}\PY{n}{p}\PY{o}{/}\PY{o}{/}\PY{l+m+mi}{1000}\PY{p}{)}\PY{p}{)}
+       \PY{k}{if} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{k}\PY{l+s+s2}{\PYZdq{}} \PY{o+ow}{in} \PY{n}{kwargs}\PY{p}{:}
+           \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{k =}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{n}{k}\PY{p}{)}
+           \PY{n}{kw}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{k}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{=}\PY{n}{k}
+       
+       \PY{n}{time1}\PY{p}{,}\PY{n}{time2}\PY{p}{,}\PY{n}{res}\PY{o}{=}\PY{n}{compareExecutionTime}\PY{p}{(}\PY{n}{A}\PY{p}{,}\PY{n}{A}\PY{p}{,}\PY{n}{timelimit}\PY{o}{=}\PY{l+m+mi}{1}\PY{p}{,} \PY{n}{reps}\PY{o}{=}\PY{l+m+mi}{3}\PY{p}{,}\PY{o}{*}\PY{o}{*}\PY{n}{kw}\PY{p}{)}
+       
+       \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Mean exec. time of }\PY{l+s+si}{\PYZpc{}s}\PY{l+s+s2}{:        }\PY{l+s+si}{\PYZpc{}.15f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{p}{(}\PY{n}{A}\PY{o}{.}\PY{n+nv+vm}{\PYZus{}\PYZus{}name\PYZus{}\PYZus{}}\PY{p}{,} \PY{n}{time1}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{)}\PY{p}{)}
+       \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Std. of the exec. time of }\PY{l+s+si}{\PYZpc{}s}\PY{l+s+s2}{: }\PY{l+s+si}{\PYZpc{}.15f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{p}{(}\PY{n}{A}\PY{o}{.}\PY{n+nv+vm}{\PYZus{}\PYZus{}name\PYZus{}\PYZus{}}\PY{p}{,} \PY{n}{time1}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{)}\PY{p}{)}
+       \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Result (is prime):}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{n}{res}\PY{p}{)}
+       \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+se}{\PYZbs{}n}\PY{l+s+se}{\PYZbs{}n}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+   
+   \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{algorithms}\PY{p}{)}\PY{p}{)}\PY{p}{:}
+       \PY{n}{algo}\PY{o}{=}\PY{n}{algorithms}\PY{p}{[}\PY{n}{i}\PY{p}{]}
+       \PY{n}{kw}\PY{o}{=}\PY{n}{args}\PY{p}{[}\PY{n}{i}\PY{p}{]}
+       \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+se}{\PYZbs{}n}\PY{l+s+se}{\PYZbs{}n}\PY{l+s+se}{\PYZbs{}n}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+       \PY{n+nb}{print}\PY{p}{(}\PY{n}{algo}\PY{o}{.}\PY{n+nv+vm}{\PYZus{}\PYZus{}name\PYZus{}\PYZus{}}\PY{p}{)}
+       \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+se}{\PYZbs{}n}\PY{l+s+se}{\PYZbs{}n}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+       
+       \PY{k}{for} \PY{n}{p} \PY{o+ow}{in} \PY{n}{prime}\PY{p}{:}
+           \PY{n}{execFor}\PY{p}{(}\PY{n}{algo}\PY{p}{,} \PY{n}{p}\PY{p}{,} \PY{k+kc}{True}\PY{p}{,}\PY{o}{*}\PY{o}{*}\PY{n}{kw}\PY{p}{)}
+       
+       \PY{k}{for} \PY{n}{c} \PY{o+ow}{in} \PY{n}{composite}\PY{p}{:}
+           \PY{n}{execFor}\PY{p}{(}\PY{n}{algo}\PY{p}{,} \PY{n}{c}\PY{p}{,} \PY{k+kc}{False}\PY{p}{,}\PY{o}{*}\PY{o}{*}\PY{n}{kw}\PY{p}{)}
+       \PY{n+nb}{print}\PY{p}{(}\PY{n}{end}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+se}{\PYZbs{}n}\PY{l+s+se}{\PYZbs{}n}\PY{l+s+se}{\PYZbs{}n}\PY{l+s+se}{\PYZbs{}n}\PY{l+s+se}{\PYZbs{}n}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+   \end{Verbatim}
+   \end{tcolorbox}
+   
+       \begin{Verbatim}[commandchars=\\\{\}]
+   
+   is\_prime\_miller\_rabin
+   
+   
+   
+   n = 3
+   k = 5
+   Mean exec. time of is\_prime\_miller\_rabin:        0.000590483347575
+   Std. of the exec. time of is\_prime\_miller\_rabin: 0.000427862642700
+   Result (is prime): True
+   
+   n = 17
+   k = 5
+   Mean exec. time of is\_prime\_miller\_rabin:        0.000280618667603
+   Std. of the exec. time of is\_prime\_miller\_rabin: 0.000396854725579
+   Result (is prime): True
+   
+   n = 101
+   k = 5
+   Mean exec. time of is\_prime\_miller\_rabin:        0.000000000000000
+   Std. of the exec. time of is\_prime\_miller\_rabin: 0.000000000000000
+   Result (is prime): True
+   
+   n = 1013
+   k = 5
+   Mean exec. time of is\_prime\_miller\_rabin:        0.000333150227865
+   Std. of the exec. time of is\_prime\_miller\_rabin: 0.000471145570554
+   Result (is prime): True
+   
+   n = 10099
+   k = 10
+   Mean exec. time of is\_prime\_miller\_rabin:        0.000000000000000
+   Std. of the exec. time of is\_prime\_miller\_rabin: 0.000000000000000
+   Result (is prime): True
+   
+   n = 103141
+   k = 103
+   Mean exec. time of is\_prime\_miller\_rabin:        0.000333229700724
+   Std. of the exec. time of is\_prime\_miller\_rabin: 0.000471257962150
+   Result (is prime): True
+   
+   n = 1016783
+   k = 1016
+   Mean exec. time of is\_prime\_miller\_rabin:        0.002358675003052
+   Std. of the exec. time of is\_prime\_miller\_rabin: 0.000464328737021
+   Result (is prime): True
+   
+   n = 10103099
+   k = 10000
+   Mean exec. time of is\_prime\_miller\_rabin:        0.014384428660075
+   Std. of the exec. time of is\_prime\_miller\_rabin: 0.005813682264924
+   Result (is prime): True
+   
+   n = 107707549
+   k = 10000
+   Mean exec. time of is\_prime\_miller\_rabin:        0.019036531448364
+   Std. of the exec. time of is\_prime\_miller\_rabin: 0.006607947800820
+   Result (is prime): True
+   
+   
+   
+   n = 10770592813
+   k = 10000
+   Mean exec. time of is\_prime\_miller\_rabin:        0.049041827519735
+   Std. of the exec. time of is\_prime\_miller\_rabin: 0.009677878993151
+   Result (is prime): True
+   
+   n = 107705911723
+   k = 10000
+   Mean exec. time of is\_prime\_miller\_rabin:        0.050721724828084
+   Std. of the exec. time of is\_prime\_miller\_rabin: 0.009363379529984
+   Result (is prime): True
+   
+   n = 4547337172376300111955330758342147474062293202868155909489
+   k = 10000
+   Mean exec. time of is\_prime\_miller\_rabin:        0.615550041198730
+   Std. of the exec. time of is\_prime\_miller\_rabin: 0.014455935262770
+   Result (is prime): True
+   
+   n = 2
+   k = 10000
+   Mean exec. time of is\_prime\_miller\_rabin:        0.000332911809285
+   Std. of the exec. time of is\_prime\_miller\_rabin: 0.000470808395766
+   Result (is prime): False
+   
+   n = 51
+   k = 10000
+   Mean exec. time of is\_prime\_miller\_rabin:        0.000333547592163
+   Std. of the exec. time of is\_prime\_miller\_rabin: 0.000471707528534
+   Result (is prime): False
+   
+   n = 556
+   k = 10000
+   Mean exec. time of is\_prime\_miller\_rabin:        0.000000000000000
+   Std. of the exec. time of is\_prime\_miller\_rabin: 0.000000000000000
+   Result (is prime): False
+   
+   n = 800001
+   k = 10000
+   Mean exec. time of is\_prime\_miller\_rabin:        0.000333229700724
+   Std. of the exec. time of is\_prime\_miller\_rabin: 0.000471257962150
+   Result (is prime): False
+   
+   n = 101707
+   k = 10000
+   Mean exec. time of is\_prime\_miller\_rabin:        0.000000000000000
+   Std. of the exec. time of is\_prime\_miller\_rabin: 0.000000000000000
+   Result (is prime): False
+   
+   n = 104872015403
+   k = 10000
+   Mean exec. time of is\_prime\_miller\_rabin:        0.000000000000000
+   Std. of the exec. time of is\_prime\_miller\_rabin: 0.000000000000000
+   Result (is prime): False
+   
+   n = 1302227338984882027682141097
+   k = 10000
+   Mean exec. time of is\_prime\_miller\_rabin:        0.000333547592163
+   Std. of the exec. time of is\_prime\_miller\_rabin: 0.000471707528534
+   Result (is prime): False
+   
+   n = 6570165603886230104742488179045
+   k = 10000
+   Mean exec. time of is\_prime\_miller\_rabin:        0.000000000000000
+   Std. of the exec. time of is\_prime\_miller\_rabin: 0.000000000000000
+   Result (is prime): False
+   
+   n = 4547337172376300111955330758342147474062293202868155909393
+   k = 10000
+   Mean exec. time of is\_prime\_miller\_rabin:        0.000000000000000
+   Std. of the exec. time of is\_prime\_miller\_rabin: 0.000000000000000
+   Result (is prime): False
+   
+   
+       \end{Verbatim}
+   
+       \hypertarget{textbfconclusions}{%
+   
+   \begin{enumerate}
+   \def\labelenumi{\arabic{enumi}.}
+   \tightlist
+   \end{enumerate}
+   
+    \end{section}
+
+
+
+    % Add a bibliography block to the postdoc
+    \vspace{450px}
+\begin{section}{Wnioski}
+\begin{itemize}
+    \item Algorytm naiwny, ze względu na małą złożoność kodu działa szybko ale nieskutecznie. Jeśli liczba n nie jest dostatecznie duża algorytm bez problemu rozróżnia liczby pierwsze od złożonych. Jeśli zaś dobierzemy duże liczby algorytm nie zwraca prawidłowej odpowiedzi.
+    \item Test Fermata prawidłowo określa czy dana liczba jest złożona czy pierwsza. Nie nadaje się on natomiast dla większych liczb, ponieważ czas wykonania algorytmu jest zbyt zwyczajnie za duży.
+    \item Dla testu Fermata zwiększenie liczby $s$, czyli liczby testowania wiąże się z większą dokładnością, ale i większym czasem implementacji. Jak widać mała liczba iteracji $(s=5)$ jest wystarczająca.
+    \item
+     Test Millera-Rabina jest probabilistycznym testem pierwszości, pozwala
+     z dużym prawdopodobieństwem stwierdzić, czy dana liczba jest liczbą
+     pierwszą. 
+   \item Jest znacznie szybszy w porównaniu z nieprobabilistycznym
+     testem pierwszości pierwiastka kwadratowego, a dokładność wyników
+     testu można określić i zmienić. 
+   \item Test Millera-Rabina test wyróżnia się w analizie
+     pierwszorzędności dużych liczb (np. \textgreater1e6), ze względu na
+     skrócony czas wykonania i zużycie zasobów. Wadą jest to, że jego wyniki nie są jednoznaczne z prawdopodobieństwem 100\%.
+\end{itemize}
+
+\end{section}  
+    
+\end{document}

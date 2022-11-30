@@ -1,0 +1,1211 @@
+\documentclass[11pt]{article}
+
+    \usepackage[breakable]{tcolorbox}
+    \usepackage{parskip} % Stop auto-indenting (to mimic markdown behaviour)
+    
+
+    % Basic figure setup, for now with no caption control since it's done
+    % automatically by Pandoc (which extracts ![](path) syntax from Markdown).
+    \usepackage{graphicx}
+    % Maintain compatibility with old templates. Remove in nbconvert 6.0
+    \let\Oldincludegraphics\includegraphics
+    % Ensure that by default, figures have no caption (until we provide a
+    % proper Figure object with a Caption API and a way to capture that
+    % in the conversion process - todo).
+    \usepackage{caption}
+    \DeclareCaptionFormat{nocaption}{}
+    \captionsetup{format=nocaption,aboveskip=0pt,belowskip=0pt}
+
+    \usepackage{float}
+    \floatplacement{figure}{H} % forces figures to be placed at the correct location
+    \usepackage{xcolor} % Allow colors to be defined
+    \usepackage{enumerate} % Needed for markdown enumerations to work
+    \usepackage{geometry} % Used to adjust the document margins
+    \usepackage{amsmath} % Equations
+    \usepackage{amssymb} % Equations
+    \usepackage{textcomp} % defines textquotesingle
+    % Hack from http://tex.stackexchange.com/a/47451/13684:
+    \AtBeginDocument{%
+        \def\PYZsq{\textquotesingle}% Upright quotes in Pygmentized code
+    }
+    \usepackage{upquote} % Upright quotes for verbatim code
+    \usepackage{eurosym} % defines \euro
+
+    \usepackage{iftex}
+    \ifPDFTeX
+        \usepackage[T1]{fontenc}
+        \IfFileExists{alphabeta.sty}{
+              \usepackage{alphabeta}
+          }{
+              \usepackage[mathletters]{ucs}
+              \usepackage[utf8x]{inputenc}
+          }
+    \else
+        \usepackage{fontspec}
+        \usepackage{unicode-math}
+    \fi
+
+    \usepackage{fancyvrb} % verbatim replacement that allows latex
+    \usepackage{grffile} % extends the file name processing of package graphics
+                         % to support a larger range
+    \makeatletter % fix for old versions of grffile with XeLaTeX
+    \@ifpackagelater{grffile}{2019/11/01}
+    {
+      % Do nothing on new versions
+    }
+    {
+      \def\Gread@@xetex#1{%
+        \IfFileExists{"\Gin@base".bb}%
+        {\Gread@eps{\Gin@base.bb}}%
+        {\Gread@@xetex@aux#1}%
+      }
+    }
+    \makeatother
+    \usepackage[Export]{adjustbox} % Used to constrain images to a maximum size
+    \adjustboxset{max size={0.9\linewidth}{0.9\paperheight}}
+
+    % The hyperref package gives us a pdf with properly built
+    % internal navigation ('pdf bookmarks' for the table of contents,
+    % internal cross-reference links, web links for URLs, etc.)
+    \usepackage{hyperref}
+    % The default LaTeX title has an obnoxious amount of whitespace. By default,
+    % titling removes some of it. It also provides customization options.
+    \usepackage{titling}
+    \usepackage{longtable} % longtable support required by pandoc >1.10
+    \usepackage{booktabs}  % table support for pandoc > 1.12.2
+    \usepackage{array}     % table support for pandoc >= 2.11.3
+    \usepackage{calc}      % table minipage width calculation for pandoc >= 2.11.1
+    \usepackage[inline]{enumitem} % IRkernel/repr support (it uses the enumerate* environment)
+    \usepackage[normalem]{ulem} % ulem is needed to support strikethroughs (\sout)
+                                % normalem makes italics be italics, not underlines
+    \usepackage{mathrsfs}
+    
+
+    
+    % Colors for the hyperref package
+    \definecolor{urlcolor}{rgb}{0,.145,.698}
+    \definecolor{linkcolor}{rgb}{.71,0.21,0.01}
+    \definecolor{citecolor}{rgb}{.12,.54,.11}
+
+    % ANSI colors
+    \definecolor{ansi-black}{HTML}{3E424D}
+    \definecolor{ansi-black-intense}{HTML}{282C36}
+    \definecolor{ansi-red}{HTML}{E75C58}
+    \definecolor{ansi-red-intense}{HTML}{B22B31}
+    \definecolor{ansi-green}{HTML}{00A250}
+    \definecolor{ansi-green-intense}{HTML}{007427}
+    \definecolor{ansi-yellow}{HTML}{DDB62B}
+    \definecolor{ansi-yellow-intense}{HTML}{B27D12}
+    \definecolor{ansi-blue}{HTML}{208FFB}
+    \definecolor{ansi-blue-intense}{HTML}{0065CA}
+    \definecolor{ansi-magenta}{HTML}{D160C4}
+    \definecolor{ansi-magenta-intense}{HTML}{A03196}
+    \definecolor{ansi-cyan}{HTML}{60C6C8}
+    \definecolor{ansi-cyan-intense}{HTML}{258F8F}
+    \definecolor{ansi-white}{HTML}{C5C1B4}
+    \definecolor{ansi-white-intense}{HTML}{A1A6B2}
+    \definecolor{ansi-default-inverse-fg}{HTML}{FFFFFF}
+    \definecolor{ansi-default-inverse-bg}{HTML}{000000}
+
+    % common color for the border for error outputs.
+    \definecolor{outerrorbackground}{HTML}{FFDFDF}
+
+    % commands and environments needed by pandoc snippets
+    % extracted from the output of `pandoc -s`
+    \providecommand{\tightlist}{%
+      \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+    \DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+    % Add ',fontsize=\small' for more characters per line
+    \newenvironment{Shaded}{}{}
+    \newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
+    \newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.56,0.13,0.00}{{#1}}}
+    \newcommand{\DecValTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\FloatTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\CharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\StringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\CommentTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textit{{#1}}}}
+    \newcommand{\OtherTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{{#1}}}
+    \newcommand{\AlertTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+    \newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.02,0.16,0.49}{{#1}}}
+    \newcommand{\RegionMarkerTok}[1]{{#1}}
+    \newcommand{\ErrorTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+    \newcommand{\NormalTok}[1]{{#1}}
+
+    % Additional commands for more recent versions of Pandoc
+    \newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.53,0.00,0.00}{{#1}}}
+    \newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.73,0.40,0.53}{{#1}}}
+    \newcommand{\ImportTok}[1]{{#1}}
+    \newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.73,0.13,0.13}{\textit{{#1}}}}
+    \newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\VariableTok}[1]{\textcolor[rgb]{0.10,0.09,0.49}{{#1}}}
+    \newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
+    \newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.40,0.40,0.40}{{#1}}}
+    \newcommand{\BuiltInTok}[1]{{#1}}
+    \newcommand{\ExtensionTok}[1]{{#1}}
+    \newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.74,0.48,0.00}{{#1}}}
+    \newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.49,0.56,0.16}{{#1}}}
+    \newcommand{\InformationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\WarningTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+
+
+    % Define a nice break command that doesn't care if a line doesn't already
+    % exist.
+    \def\br{\hspace*{\fill} \\* }
+    % Math Jax compatibility definitions
+    \def\gt{>}
+    \def\lt{<}
+    \let\Oldtex\TeX
+    \let\Oldlatex\LaTeX
+    \renewcommand{\TeX}{\textrm{\Oldtex}}
+    \renewcommand{\LaTeX}{\textrm{\Oldlatex}}
+    % Document parameters
+    % Document title
+    \title{Lab6}
+    
+    
+    
+    
+    
+% Pygments definitions
+\makeatletter
+\def\PY@reset{\let\PY@it=\relax \let\PY@bf=\relax%
+    \let\PY@ul=\relax \let\PY@tc=\relax%
+    \let\PY@bc=\relax \let\PY@ff=\relax}
+\def\PY@tok#1{\csname PY@tok@#1\endcsname}
+\def\PY@toks#1+{\ifx\relax#1\empty\else%
+    \PY@tok{#1}\expandafter\PY@toks\fi}
+\def\PY@do#1{\PY@bc{\PY@tc{\PY@ul{%
+    \PY@it{\PY@bf{\PY@ff{#1}}}}}}}
+\def\PY#1#2{\PY@reset\PY@toks#1+\relax+\PY@do{#2}}
+
+\@namedef{PY@tok@w}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.73,0.73}{##1}}}
+\@namedef{PY@tok@c}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@cp}{\def\PY@tc##1{\textcolor[rgb]{0.61,0.40,0.00}{##1}}}
+\@namedef{PY@tok@k}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kp}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kt}{\def\PY@tc##1{\textcolor[rgb]{0.69,0.00,0.25}{##1}}}
+\@namedef{PY@tok@o}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@ow}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.67,0.13,1.00}{##1}}}
+\@namedef{PY@tok@nb}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@nf}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@nc}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@nn}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@ne}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.80,0.25,0.22}{##1}}}
+\@namedef{PY@tok@nv}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@no}{\def\PY@tc##1{\textcolor[rgb]{0.53,0.00,0.00}{##1}}}
+\@namedef{PY@tok@nl}{\def\PY@tc##1{\textcolor[rgb]{0.46,0.46,0.00}{##1}}}
+\@namedef{PY@tok@ni}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.44,0.44,0.44}{##1}}}
+\@namedef{PY@tok@na}{\def\PY@tc##1{\textcolor[rgb]{0.41,0.47,0.13}{##1}}}
+\@namedef{PY@tok@nt}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@nd}{\def\PY@tc##1{\textcolor[rgb]{0.67,0.13,1.00}{##1}}}
+\@namedef{PY@tok@s}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sd}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@si}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.64,0.35,0.47}{##1}}}
+\@namedef{PY@tok@se}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.67,0.36,0.12}{##1}}}
+\@namedef{PY@tok@sr}{\def\PY@tc##1{\textcolor[rgb]{0.64,0.35,0.47}{##1}}}
+\@namedef{PY@tok@ss}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@sx}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@m}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@gh}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
+\@namedef{PY@tok@gu}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.50,0.00,0.50}{##1}}}
+\@namedef{PY@tok@gd}{\def\PY@tc##1{\textcolor[rgb]{0.63,0.00,0.00}{##1}}}
+\@namedef{PY@tok@gi}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.52,0.00}{##1}}}
+\@namedef{PY@tok@gr}{\def\PY@tc##1{\textcolor[rgb]{0.89,0.00,0.00}{##1}}}
+\@namedef{PY@tok@ge}{\let\PY@it=\textit}
+\@namedef{PY@tok@gs}{\let\PY@bf=\textbf}
+\@namedef{PY@tok@gp}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
+\@namedef{PY@tok@go}{\def\PY@tc##1{\textcolor[rgb]{0.44,0.44,0.44}{##1}}}
+\@namedef{PY@tok@gt}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.27,0.87}{##1}}}
+\@namedef{PY@tok@err}{\def\PY@bc##1{{\setlength{\fboxsep}{\string -\fboxrule}\fcolorbox[rgb]{1.00,0.00,0.00}{1,1,1}{\strut ##1}}}}
+\@namedef{PY@tok@kc}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kd}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kn}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kr}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@bp}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@fm}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@vc}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@vg}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@vi}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@vm}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@sa}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sb}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sc}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@dl}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@s2}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sh}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@s1}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@mb}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mf}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mh}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mi}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@il}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mo}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@ch}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@cm}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@cpf}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@c1}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@cs}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+
+\def\PYZbs{\char`\\}
+\def\PYZus{\char`\_}
+\def\PYZob{\char`\{}
+\def\PYZcb{\char`\}}
+\def\PYZca{\char`\^}
+\def\PYZam{\char`\&}
+\def\PYZlt{\char`\<}
+\def\PYZgt{\char`\>}
+\def\PYZsh{\char`\#}
+\def\PYZpc{\char`\%}
+\def\PYZdl{\char`\$}
+\def\PYZhy{\char`\-}
+\def\PYZsq{\char`\'}
+\def\PYZdq{\char`\"}
+\def\PYZti{\char`\~}
+% for compatibility with earlier versions
+\def\PYZat{@}
+\def\PYZlb{[}
+\def\PYZrb{]}
+\makeatother
+
+
+    % For linebreaks inside Verbatim environment from package fancyvrb.
+    \makeatletter
+        \newbox\Wrappedcontinuationbox
+        \newbox\Wrappedvisiblespacebox
+        \newcommand*\Wrappedvisiblespace {\textcolor{red}{\textvisiblespace}}
+        \newcommand*\Wrappedcontinuationsymbol {\textcolor{red}{\llap{\tiny$\m@th\hookrightarrow$}}}
+        \newcommand*\Wrappedcontinuationindent {3ex }
+        \newcommand*\Wrappedafterbreak {\kern\Wrappedcontinuationindent\copy\Wrappedcontinuationbox}
+        % Take advantage of the already applied Pygments mark-up to insert
+        % potential linebreaks for TeX processing.
+        %        {, <, #, %, $, ' and ": go to next line.
+        %        _, }, ^, &, >, - and ~: stay at end of broken line.
+        % Use of \textquotesingle for straight quote.
+        \newcommand*\Wrappedbreaksatspecials {%
+            \def\PYGZus{\discretionary{\char`\_}{\Wrappedafterbreak}{\char`\_}}%
+            \def\PYGZob{\discretionary{}{\Wrappedafterbreak\char`\{}{\char`\{}}%
+            \def\PYGZcb{\discretionary{\char`\}}{\Wrappedafterbreak}{\char`\}}}%
+            \def\PYGZca{\discretionary{\char`\^}{\Wrappedafterbreak}{\char`\^}}%
+            \def\PYGZam{\discretionary{\char`\&}{\Wrappedafterbreak}{\char`\&}}%
+            \def\PYGZlt{\discretionary{}{\Wrappedafterbreak\char`\<}{\char`\<}}%
+            \def\PYGZgt{\discretionary{\char`\>}{\Wrappedafterbreak}{\char`\>}}%
+            \def\PYGZsh{\discretionary{}{\Wrappedafterbreak\char`\#}{\char`\#}}%
+            \def\PYGZpc{\discretionary{}{\Wrappedafterbreak\char`\%}{\char`\%}}%
+            \def\PYGZdl{\discretionary{}{\Wrappedafterbreak\char`\$}{\char`\$}}%
+            \def\PYGZhy{\discretionary{\char`\-}{\Wrappedafterbreak}{\char`\-}}%
+            \def\PYGZsq{\discretionary{}{\Wrappedafterbreak\textquotesingle}{\textquotesingle}}%
+            \def\PYGZdq{\discretionary{}{\Wrappedafterbreak\char`\"}{\char`\"}}%
+            \def\PYGZti{\discretionary{\char`\~}{\Wrappedafterbreak}{\char`\~}}%
+        }
+        % Some characters . , ; ? ! / are not pygmentized.
+        % This macro makes them "active" and they will insert potential linebreaks
+        \newcommand*\Wrappedbreaksatpunct {%
+            \lccode`\~`\.\lowercase{\def~}{\discretionary{\hbox{\char`\.}}{\Wrappedafterbreak}{\hbox{\char`\.}}}%
+            \lccode`\~`\,\lowercase{\def~}{\discretionary{\hbox{\char`\,}}{\Wrappedafterbreak}{\hbox{\char`\,}}}%
+            \lccode`\~`\;\lowercase{\def~}{\discretionary{\hbox{\char`\;}}{\Wrappedafterbreak}{\hbox{\char`\;}}}%
+            \lccode`\~`\:\lowercase{\def~}{\discretionary{\hbox{\char`\:}}{\Wrappedafterbreak}{\hbox{\char`\:}}}%
+            \lccode`\~`\?\lowercase{\def~}{\discretionary{\hbox{\char`\?}}{\Wrappedafterbreak}{\hbox{\char`\?}}}%
+            \lccode`\~`\!\lowercase{\def~}{\discretionary{\hbox{\char`\!}}{\Wrappedafterbreak}{\hbox{\char`\!}}}%
+            \lccode`\~`\/\lowercase{\def~}{\discretionary{\hbox{\char`\/}}{\Wrappedafterbreak}{\hbox{\char`\/}}}%
+            \catcode`\.\active
+            \catcode`\,\active
+            \catcode`\;\active
+            \catcode`\:\active
+            \catcode`\?\active
+            \catcode`\!\active
+            \catcode`\/\active
+            \lccode`\~`\~
+        }
+    \makeatother
+
+    \let\OriginalVerbatim=\Verbatim
+    \makeatletter
+    \renewcommand{\Verbatim}[1][1]{%
+        %\parskip\z@skip
+        \sbox\Wrappedcontinuationbox {\Wrappedcontinuationsymbol}%
+        \sbox\Wrappedvisiblespacebox {\FV@SetupFont\Wrappedvisiblespace}%
+        \def\FancyVerbFormatLine ##1{\hsize\linewidth
+            \vtop{\raggedright\hyphenpenalty\z@\exhyphenpenalty\z@
+                \doublehyphendemerits\z@\finalhyphendemerits\z@
+                \strut ##1\strut}%
+        }%
+        % If the linebreak is at a space, the latter will be displayed as visible
+        % space at end of first line, and a continuation symbol starts next line.
+        % Stretch/shrink are however usually zero for typewriter font.
+        \def\FV@Space {%
+            \nobreak\hskip\z@ plus\fontdimen3\font minus\fontdimen4\font
+            \discretionary{\copy\Wrappedvisiblespacebox}{\Wrappedafterbreak}
+            {\kern\fontdimen2\font}%
+        }%
+
+        % Allow breaks at special characters using \PYG... macros.
+        \Wrappedbreaksatspecials
+        % Breaks at punctuation characters . , ; ? ! and / need catcode=\active
+        \OriginalVerbatim[#1,codes*=\Wrappedbreaksatpunct]%
+    }
+    \makeatother
+
+    % Exact colors from NB
+    \definecolor{incolor}{HTML}{303F9F}
+    \definecolor{outcolor}{HTML}{D84315}
+    \definecolor{cellborder}{HTML}{CFCFCF}
+    \definecolor{cellbackground}{HTML}{F7F7F7}
+
+    % prompt
+    \makeatletter
+    \newcommand{\boxspacing}{\kern\kvtcb@left@rule\kern\kvtcb@boxsep}
+    \makeatother
+    \newcommand{\prompt}[4]{
+        {\ttfamily\llap{{\color{#2}[#3]:\hspace{3pt}#4}}\vspace{-\baselineskip}}
+    }
+    
+
+    
+    % Prevent overflowing lines due to hard-to-break entities
+    \sloppy
+    % Setup hyperref package
+    \hypersetup{
+      breaklinks=true,  % so long urls are correctly broken across lines
+      colorlinks=true,
+      urlcolor=urlcolor,
+      linkcolor=linkcolor,
+      citecolor=citecolor,
+      }
+    % Slightly bigger margins than the latex defaults
+    
+    \geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
+    
+    
+
+\begin{document}
+    
+    \maketitle
+    
+    
+
+    
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{26}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k+kn}{from} \PY{n+nn}{Lab6} \PY{k+kn}{import} \PY{o}{*}
+\PY{k+kn}{from} \PY{n+nn}{random} \PY{k+kn}{import} \PY{n}{randint}
+\PY{k+kn}{from} \PY{n+nn}{numpy} \PY{k+kn}{import} \PY{n}{array}\PY{p}{,}\PY{n}{inf}
+\PY{k+kn}{from} \PY{n+nn}{time} \PY{k+kn}{import} \PY{n}{time}
+\PY{k+kn}{from} \PY{n+nn}{threading} \PY{k+kn}{import} \PY{n}{Thread}
+\PY{k+kn}{import} \PY{n+nn}{threading}
+\PY{k+kn}{from} \PY{n+nn}{math} \PY{k+kn}{import} \PY{n}{sqrt}\PY{p}{,}\PY{n}{ceil}
+\PY{k+kn}{import} \PY{n+nn}{warnings}
+\PY{n}{warnings}\PY{o}{.}\PY{n}{simplefilter}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{ignore}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{27}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{ev} \PY{o}{=} \PY{n}{threading}\PY{o}{.}\PY{n}{Event}\PY{p}{(}\PY{p}{)}
+\PY{k}{def} \PY{n+nf}{stop}\PY{p}{(}\PY{p}{)}\PY{p}{:}
+    \PY{k}{return} \PY{n}{ev}\PY{o}{.}\PY{n}{is\PYZus{}set}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \hypertarget{naiwny-test-pierwszoux15bci-test-pierwiastka-kwadratowego}{%
+\subsubsection{Naiwny test pierwszości (test pierwiastka
+kwadratowego)}\label{naiwny-test-pierwszoux15bci-test-pierwiastka-kwadratowego}}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{30}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k}{def} \PY{n+nf}{is\PYZus{}prime\PYZus{}naive\PYZus{}sqrt}\PY{p}{(}\PY{n}{n}\PY{p}{)}\PY{p}{:}
+    \PY{k}{if} \PY{n}{n} \PY{o}{\PYZlt{}}\PY{o}{=} \PY{l+m+mi}{1}\PY{p}{:}
+        \PY{k}{return} \PY{k+kc}{False}
+    
+    \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{l+m+mi}{2}\PY{p}{,} \PY{n}{ceil}\PY{p}{(}\PY{n}{sqrt}\PY{p}{(}\PY{n}{n}\PY{p}{)}\PY{p}{)}\PY{o}{+}\PY{l+m+mi}{1}\PY{p}{)}\PY{p}{:}
+        \PY{k}{if} \PY{n}{stop}\PY{p}{(}\PY{p}{)}\PY{p}{:} 
+            \PY{k}{return}
+        \PY{k}{if} \PY{n}{n} \PY{o}{\PYZpc{}} \PY{n}{i} \PY{o}{==} \PY{l+m+mi}{0}\PY{p}{:}
+            \PY{k}{return} \PY{k+kc}{False}    
+    \PY{k}{return} \PY{k+kc}{True}     
+\end{Verbatim}
+\end{tcolorbox}
+
+    \hypertarget{test-pierwszoux15bci-fermata}{%
+\subsubsection{Test pierwszości
+Fermata}\label{test-pierwszoux15bci-fermata}}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{29}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k}{def} \PY{n+nf}{is\PYZus{}prime\PYZus{}fermat}\PY{p}{(}\PY{n}{n}\PY{p}{,} \PY{n}{k}\PY{p}{)}\PY{p}{:}
+    \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{k}\PY{p}{)}\PY{p}{:}
+        \PY{k}{if} \PY{n}{stop}\PY{p}{(}\PY{p}{)}\PY{p}{:} 
+            \PY{k}{return}
+        \PY{k}{if} \PY{n}{n} \PY{o}{\PYZlt{}}\PY{o}{=} \PY{l+m+mi}{3}\PY{p}{:}
+            \PY{k}{return} \PY{k+kc}{True}
+        \PY{k}{else}\PY{p}{:}
+            \PY{n}{t} \PY{o}{=} \PY{n}{randint}\PY{p}{(}\PY{l+m+mi}{2}\PY{p}{,}\PY{p}{(}\PY{n}{n}\PY{o}{\PYZhy{}}\PY{l+m+mi}{2}\PY{p}{)}\PY{p}{)}
+            \PY{k}{if} \PY{n+nb}{pow}\PY{p}{(}\PY{n}{t}\PY{p}{,}\PY{n}{n}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{,}\PY{n}{n}\PY{p}{)} \PY{o}{!=} \PY{l+m+mi}{1}\PY{p}{:}
+                \PY{k}{return} \PY{k+kc}{False}
+        \PY{k}{return} \PY{k+kc}{True}
+\end{Verbatim}
+\end{tcolorbox}
+
+    Miller-Rabin test: - Input: n \textgreater{} 2, an odd integer to be
+tested for primality; -k, a parameter that determines the accuracy of
+the test - Output: composite if n is composite, otherwise probably prime
+- write n − 1 as 2s·d with d odd by factoring powers of 2 from n − 1 -
+LOOP: repeat k times: - pick a randomly in the range {[}2, n − 1{]} - x
+← a d mod n - if x = 1 or x = n − 1 then do next LOOP - repeat s − 1
+times: - x ← x 2 mod n - if x = 1 then return composite - if x = n − 1
+then do next LOOP - return composite - return probably prime
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{28}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k}{def} \PY{n+nf}{is\PYZus{}prime\PYZus{}miller\PYZus{}rabin}\PY{p}{(}\PY{n}{n}\PY{p}{,} \PY{n}{k}\PY{p}{)}\PY{p}{:}
+    \PY{l+s+sd}{\PYZdq{}\PYZdq{}\PYZdq{}}
+\PY{l+s+sd}{    Input: n \PYZgt{} 2, an odd integer to be tested for primality;}
+\PY{l+s+sd}{       k, a parameter that determines the accuracy of the test}
+\PY{l+s+sd}{    Output: composite if n is composite, otherwise probably prime}
+\PY{l+s+sd}{    write n − 1 as 2s·d with d odd by factoring powers of 2 from n − 1}
+\PY{l+s+sd}{    LOOP: repeat k times:}
+\PY{l+s+sd}{       pick a randomly in the range [2, n − 1]}
+\PY{l+s+sd}{       x ← a d mod n}
+\PY{l+s+sd}{       if x = 1 or x = n − 1 then do next LOOP}
+\PY{l+s+sd}{       repeat s − 1 times:}
+\PY{l+s+sd}{          x ← x 2 mod n}
+\PY{l+s+sd}{          if x = 1 then return composite}
+\PY{l+s+sd}{          if x = n − 1 then do next LOOP}
+\PY{l+s+sd}{       return composite}
+\PY{l+s+sd}{    return probably prime}
+\PY{l+s+sd}{    \PYZdq{}\PYZdq{}\PYZdq{}}
+    \PY{k}{if} \PY{o+ow}{not} \PY{n}{n}\PY{o}{\PYZam{}}\PY{l+m+mi}{1} \PY{o+ow}{or} \PY{n}{n}\PY{o}{==}\PY{l+m+mi}{1}\PY{p}{:}
+        \PY{k}{return} \PY{k+kc}{False}
+    \PY{n}{s}\PY{o}{=}\PY{l+m+mi}{1}
+    \PY{n}{d}\PY{o}{=}\PY{n}{n}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}
+    \PY{k}{while} \PY{o+ow}{not} \PY{n}{d}\PY{o}{\PYZam{}}\PY{l+m+mi}{1}\PY{p}{:}
+        \PY{n}{s}\PY{o}{*}\PY{o}{=}\PY{l+m+mi}{2}
+        \PY{n}{d}\PY{o}{/}\PY{o}{/}\PY{o}{=}\PY{l+m+mi}{2}
+    \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{k}\PY{p}{)}\PY{p}{:}
+        \PY{n}{a} \PY{o}{=} \PY{n}{randint}\PY{p}{(}\PY{l+m+mi}{2}\PY{p}{,}\PY{n}{n}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{)}
+        \PY{n}{x} \PY{o}{=} \PY{n+nb}{pow}\PY{p}{(}\PY{n}{a}\PY{p}{,}\PY{n}{d}\PY{p}{,}\PY{n}{n}\PY{p}{)}
+        \PY{k}{if} \PY{n}{x}\PY{o}{==}\PY{l+m+mi}{1} \PY{o+ow}{or} \PY{n}{x}\PY{o}{==}\PY{n}{n}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{:}
+            \PY{k}{continue}
+        \PY{k}{for} \PY{n}{j} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{s}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{)}\PY{p}{:}
+            \PY{k}{if} \PY{n}{stop}\PY{p}{(}\PY{p}{)}\PY{p}{:} 
+                \PY{k}{return}
+            \PY{n}{x} \PY{o}{=} \PY{n+nb}{pow}\PY{p}{(}\PY{n}{x}\PY{p}{,}\PY{l+m+mi}{2}\PY{p}{,}\PY{n}{n}\PY{p}{)}
+            \PY{k}{if} \PY{n}{x}\PY{o}{==}\PY{l+m+mi}{1}\PY{p}{:}
+                \PY{k}{return} \PY{k+kc}{False}
+            \PY{k}{if} \PY{n}{x}\PY{o}{==}\PY{n}{n}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{:}
+                \PY{k}{break}
+        \PY{k}{if} \PY{n}{x}\PY{o}{==}\PY{n}{n}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{:}
+            \PY{k}{continue}
+        \PY{k}{return} \PY{k+kc}{False}
+    \PY{k}{return} \PY{k+kc}{True}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{31}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k}{def} \PY{n+nf}{compareExecutionTime}\PY{p}{(}\PY{n}{A}\PY{p}{,} \PY{n}{B}\PY{p}{,} \PY{n}{reps}\PY{o}{=}\PY{l+m+mi}{1}\PY{p}{,} \PY{n}{timelimit}\PY{o}{=}\PY{l+m+mi}{3}\PY{p}{,} \PY{o}{*}\PY{o}{*}\PY{n}{kwargs}\PY{p}{)}\PY{p}{:}
+    \PY{n}{t1} \PY{o}{=} \PY{p}{[}\PY{p}{]}
+    \PY{n}{t2} \PY{o}{=} \PY{p}{[}\PY{p}{]}
+    \PY{n}{res}\PY{o}{=}\PY{k+kc}{None}
+    \PY{n}{r1}\PY{o}{=}\PY{k+kc}{None}
+    \PY{n}{r2}\PY{o}{=}\PY{k+kc}{None}
+    \PY{k}{def} \PY{n+nf}{f1}\PY{p}{(}\PY{o}{*}\PY{o}{*}\PY{n}{kwargs}\PY{p}{)}\PY{p}{:}
+        \PY{k}{nonlocal} \PY{n}{r1}\PY{p}{,}\PY{n}{t1}
+        \PY{n}{r1}\PY{o}{=}\PY{n}{A}\PY{p}{(}\PY{o}{*}\PY{o}{*}\PY{n}{kwargs}\PY{p}{)}
+        \PY{k}{if} \PY{o+ow}{not} \PY{n}{stop}\PY{p}{(}\PY{p}{)}\PY{p}{:}
+            \PY{n}{t1}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{time}\PY{p}{(}\PY{p}{)} \PY{o}{\PYZhy{}} \PY{n}{time1}\PY{p}{)}
+    \PY{k}{def} \PY{n+nf}{f2}\PY{p}{(}\PY{o}{*}\PY{o}{*}\PY{n}{kwargs}\PY{p}{)}\PY{p}{:}
+        \PY{k}{nonlocal} \PY{n}{r2}\PY{p}{,}\PY{n}{t2}
+        \PY{n}{r2}\PY{o}{=}\PY{n}{B}\PY{p}{(}\PY{o}{*}\PY{o}{*}\PY{n}{kwargs}\PY{p}{)}
+        \PY{k}{if} \PY{o+ow}{not} \PY{n}{stop}\PY{p}{(}\PY{p}{)}\PY{p}{:}
+            \PY{n}{t2}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{time}\PY{p}{(}\PY{p}{)} \PY{o}{\PYZhy{}} \PY{n}{time2}\PY{p}{)}
+    \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{reps}\PY{p}{)}\PY{p}{:}
+        \PY{n}{r1}\PY{p}{,}\PY{n}{r2}\PY{o}{=}\PY{k+kc}{None}\PY{p}{,}\PY{k+kc}{None}
+        \PY{n}{time1} \PY{o}{=} \PY{n}{time}\PY{p}{(}\PY{p}{)}
+        
+        \PY{n}{l}\PY{o}{=}\PY{n+nb}{len}\PY{p}{(}\PY{n}{t1}\PY{p}{)}
+        
+        \PY{n}{p1} \PY{o}{=} \PY{n}{Thread}\PY{p}{(}\PY{n}{target} \PY{o}{=} \PY{n}{f1}\PY{p}{,} \PY{n}{kwargs} \PY{o}{=} \PY{n}{kwargs}\PY{p}{)}
+        \PY{n}{p1}\PY{o}{.}\PY{n}{start}\PY{p}{(}\PY{p}{)}
+        \PY{n}{p1}\PY{o}{.}\PY{n}{join}\PY{p}{(}\PY{n}{timeout} \PY{o}{=} \PY{n}{timelimit}\PY{p}{)}
+        \PY{k}{while} \PY{n}{time}\PY{p}{(}\PY{p}{)}\PY{o}{\PYZhy{}}\PY{n}{time1}\PY{o}{\PYZlt{}}\PY{n}{timelimit} \PY{o+ow}{and} \PY{n}{p1}\PY{o}{.}\PY{n}{is\PYZus{}alive}\PY{p}{(}\PY{p}{)}\PY{p}{:} \PY{k}{pass}
+        \PY{n}{ev}\PY{o}{.}\PY{n}{set}\PY{p}{(}\PY{p}{)}
+        \PY{k}{while} \PY{n}{p1}\PY{o}{.}\PY{n}{is\PYZus{}alive}\PY{p}{(}\PY{p}{)}\PY{p}{:} \PY{k}{pass}
+        \PY{n}{ev}\PY{o}{.}\PY{n}{clear}\PY{p}{(}\PY{p}{)}
+        
+        \PY{k}{if} \PY{n+nb}{len}\PY{p}{(}\PY{n}{t1}\PY{p}{)}\PY{o}{==}\PY{n}{l}\PY{p}{:}
+            \PY{n}{t1}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{inf}\PY{p}{)}
+        
+        \PY{n}{l}\PY{o}{=}\PY{n+nb}{len}\PY{p}{(}\PY{n}{t2}\PY{p}{)}
+        \PY{n}{time2} \PY{o}{=} \PY{n}{time}\PY{p}{(}\PY{p}{)}
+        \PY{n}{p2} \PY{o}{=} \PY{n}{Thread}\PY{p}{(}\PY{n}{target} \PY{o}{=} \PY{n}{f2}\PY{p}{,} \PY{n}{kwargs} \PY{o}{=} \PY{n}{kwargs}\PY{p}{)}
+        \PY{n}{p2}\PY{o}{.}\PY{n}{start}\PY{p}{(}\PY{p}{)}
+        \PY{n}{p2}\PY{o}{.}\PY{n}{join}\PY{p}{(}\PY{n}{timeout} \PY{o}{=} \PY{n}{timelimit}\PY{p}{)}
+        \PY{k}{while} \PY{n}{time}\PY{p}{(}\PY{p}{)}\PY{o}{\PYZhy{}}\PY{n}{time2}\PY{o}{\PYZlt{}}\PY{n}{timelimit} \PY{o+ow}{and} \PY{n}{p2}\PY{o}{.}\PY{n}{is\PYZus{}alive}\PY{p}{(}\PY{p}{)}\PY{p}{:} \PY{k}{pass}
+        \PY{n}{ev}\PY{o}{.}\PY{n}{set}\PY{p}{(}\PY{p}{)}
+        \PY{k}{while} \PY{n}{p2}\PY{o}{.}\PY{n}{is\PYZus{}alive}\PY{p}{(}\PY{p}{)}\PY{p}{:} \PY{k}{pass}
+        \PY{n}{ev}\PY{o}{.}\PY{n}{clear}\PY{p}{(}\PY{p}{)}
+        
+        \PY{k}{if} \PY{n+nb}{len}\PY{p}{(}\PY{n}{t2}\PY{p}{)}\PY{o}{==}\PY{n}{l}\PY{p}{:}
+            \PY{n}{t2}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{inf}\PY{p}{)}
+        
+        \PY{k}{assert} \PY{n}{r1} \PY{o+ow}{is} \PY{k+kc}{None} \PY{o+ow}{or} \PY{n}{r2} \PY{o+ow}{is} \PY{k+kc}{None} \PY{o+ow}{or} \PY{n}{r1}\PY{o}{==}\PY{n}{r2}
+        \PY{k}{if} \PY{n}{res} \PY{o+ow}{is} \PY{k+kc}{None}\PY{p}{:}
+            \PY{n}{res}\PY{o}{=}\PY{n}{r1}
+        \PY{n}{r1}\PY{o}{=}\PY{k+kc}{None}
+        \PY{n}{r2}\PY{o}{=}\PY{k+kc}{None}
+    \PY{n}{t11} \PY{o}{=} \PY{n}{array}\PY{p}{(}\PY{n}{t1}\PY{p}{,} \PY{n}{dtype}\PY{o}{=}\PY{n+nb}{float}\PY{p}{)}
+    \PY{n}{t21} \PY{o}{=} \PY{n}{array}\PY{p}{(}\PY{n}{t2}\PY{p}{,} \PY{n}{dtype}\PY{o}{=}\PY{n+nb}{float}\PY{p}{)}
+    
+    \PY{k}{return} \PY{p}{[}\PY{p}{(}\PY{n}{t11}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{,} \PY{n}{t11}\PY{o}{.}\PY{n}{std}\PY{p}{(}\PY{p}{)}\PY{p}{)}\PY{p}{,} \PY{p}{(}\PY{n}{t21}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{,} \PY{n}{t21}\PY{o}{.}\PY{n}{std}\PY{p}{(}\PY{p}{)}\PY{p}{)}\PY{p}{,} \PY{n}{res}\PY{p}{]}
+\end{Verbatim}
+\end{tcolorbox}
+
+    Execution time analysis: - Given two lists of prime and composite
+numbers - For each number: - Check if a primality test function returns
+the expected value - Test the execution time - Print mean and standard
+deviation of the execution time for each number
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{35}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{prime}\PY{o}{=}\PY{p}{[}
+    \PY{l+m+mi}{3}\PY{p}{,}
+    \PY{l+m+mi}{17}\PY{p}{,}
+    \PY{l+m+mi}{101}\PY{p}{,}
+    \PY{l+m+mi}{1013}\PY{p}{,}
+    \PY{l+m+mi}{10099}\PY{p}{,}
+    \PY{l+m+mi}{103141}\PY{p}{,}
+    \PY{l+m+mi}{1016783}\PY{p}{,}
+    \PY{l+m+mi}{10103099}\PY{p}{,}
+    \PY{l+m+mi}{107707549}\PY{p}{,}
+    \PY{l+m+mi}{10770592813}\PY{p}{,}
+    \PY{l+m+mi}{107705911723}\PY{p}{,}
+    \PY{l+m+mi}{4547337172376300111955330758342147474062293202868155909489}
+\PY{p}{]}
+\PY{n}{composite}\PY{o}{=}\PY{p}{[}
+    \PY{l+m+mi}{2}\PY{p}{,}
+    \PY{l+m+mi}{3}\PY{o}{*}\PY{l+m+mi}{17}\PY{p}{,}
+    \PY{l+m+mi}{556}\PY{p}{,}
+    \PY{l+m+mi}{800001}\PY{p}{,}
+    \PY{l+m+mi}{1007}\PY{o}{*}\PY{l+m+mi}{101}\PY{p}{,}
+    \PY{l+m+mi}{103141}\PY{o}{*}\PY{l+m+mi}{1016783}\PY{p}{,}
+    \PY{l+m+mi}{245709213523}\PY{o}{*}\PY{l+m+mi}{5299871829441939}\PY{p}{,}
+    \PY{l+m+mi}{5059489012128901}\PY{o}{*}\PY{l+m+mi}{1298582838728545}\PY{p}{,}
+    \PY{l+m+mi}{4547337172376300111955330758342147474062293202868155909393}
+\PY{p}{]}
+
+\PY{n}{algorithms}\PY{o}{=}\PY{p}{[}
+    \PY{n}{is\PYZus{}prime\PYZus{}naive\PYZus{}sqrt}\PY{p}{,}
+    \PY{n}{is\PYZus{}prime\PYZus{}fermat}\PY{p}{,}
+    \PY{n}{is\PYZus{}prime\PYZus{}miller\PYZus{}rabin}
+\PY{p}{]}
+\PY{n}{args}\PY{o}{=}\PY{p}{[}
+    \PY{p}{\PYZob{}}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{n}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:}\PY{l+m+mi}{1}\PY{p}{\PYZcb{}}\PY{p}{,}
+    \PY{p}{\PYZob{}}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{n}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{k}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:}\PY{l+m+mi}{1}\PY{p}{\PYZcb{}}\PY{p}{,}
+    \PY{p}{\PYZob{}}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{n}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{k}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:}\PY{l+m+mi}{1}\PY{p}{\PYZcb{}}
+\PY{p}{]}
+    
+
+\PY{k}{def} \PY{n+nf}{execFor}\PY{p}{(}\PY{n}{algo}\PY{p}{,} \PY{n}{\PYZus{}n}\PY{p}{,} \PY{n}{expected}\PY{p}{,} \PY{o}{*}\PY{o}{*}\PY{n}{kwargs}\PY{p}{)}\PY{p}{:}
+    \PY{n}{A}\PY{o}{=}\PY{n}{algo}
+    \PY{n}{kw}\PY{o}{=}\PY{n+nb}{dict}\PY{p}{(}\PY{p}{)}
+    \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{n =}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{n}{\PYZus{}n}\PY{p}{)}
+    \PY{n}{kw}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{n}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{=}\PY{n}{\PYZus{}n}
+    \PY{n}{k}\PY{o}{=}\PY{n+nb}{min}\PY{p}{(}\PY{l+m+mi}{10000}\PY{p}{,}\PY{n+nb}{max}\PY{p}{(}\PY{l+m+mi}{5}\PY{p}{,}\PY{n}{p}\PY{o}{/}\PY{o}{/}\PY{l+m+mi}{1000}\PY{p}{)}\PY{p}{)}
+    \PY{k}{if} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{k}\PY{l+s+s2}{\PYZdq{}} \PY{o+ow}{in} \PY{n}{kwargs}\PY{p}{:}
+        \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{k =}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{n}{k}\PY{p}{)}
+        \PY{n}{kw}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{k}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{=}\PY{n}{k}
+    
+    \PY{n}{time1}\PY{p}{,}\PY{n}{time2}\PY{p}{,}\PY{n}{res}\PY{o}{=}\PY{n}{compareExecutionTime}\PY{p}{(}\PY{n}{A}\PY{p}{,}\PY{n}{A}\PY{p}{,}\PY{n}{timelimit}\PY{o}{=}\PY{l+m+mi}{1}\PY{p}{,} \PY{n}{reps}\PY{o}{=}\PY{l+m+mi}{3}\PY{p}{,}\PY{o}{*}\PY{o}{*}\PY{n}{kw}\PY{p}{)}
+    
+    \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Mean exec. time of }\PY{l+s+si}{\PYZpc{}s}\PY{l+s+s2}{:        }\PY{l+s+si}{\PYZpc{}.15f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{p}{(}\PY{n}{A}\PY{o}{.}\PY{n+nv+vm}{\PYZus{}\PYZus{}name\PYZus{}\PYZus{}}\PY{p}{,} \PY{n}{time1}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{)}\PY{p}{)}
+    \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Std. of the exec. time of }\PY{l+s+si}{\PYZpc{}s}\PY{l+s+s2}{: }\PY{l+s+si}{\PYZpc{}.15f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{p}{(}\PY{n}{A}\PY{o}{.}\PY{n+nv+vm}{\PYZus{}\PYZus{}name\PYZus{}\PYZus{}}\PY{p}{,} \PY{n}{time1}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{)}\PY{p}{)}
+    \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Result (is prime):}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{n}{res}\PY{p}{)}
+    \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+se}{\PYZbs{}n}\PY{l+s+se}{\PYZbs{}n}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+
+\PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{algorithms}\PY{p}{)}\PY{p}{)}\PY{p}{:}
+    \PY{n}{algo}\PY{o}{=}\PY{n}{algorithms}\PY{p}{[}\PY{n}{i}\PY{p}{]}
+    \PY{n}{kw}\PY{o}{=}\PY{n}{args}\PY{p}{[}\PY{n}{i}\PY{p}{]}
+    \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+se}{\PYZbs{}n}\PY{l+s+se}{\PYZbs{}n}\PY{l+s+se}{\PYZbs{}n}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+    \PY{n+nb}{print}\PY{p}{(}\PY{n}{algo}\PY{o}{.}\PY{n+nv+vm}{\PYZus{}\PYZus{}name\PYZus{}\PYZus{}}\PY{p}{)}
+    \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+se}{\PYZbs{}n}\PY{l+s+se}{\PYZbs{}n}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+    
+    \PY{k}{for} \PY{n}{p} \PY{o+ow}{in} \PY{n}{prime}\PY{p}{:}
+        \PY{n}{execFor}\PY{p}{(}\PY{n}{algo}\PY{p}{,} \PY{n}{p}\PY{p}{,} \PY{k+kc}{True}\PY{p}{,}\PY{o}{*}\PY{o}{*}\PY{n}{kw}\PY{p}{)}
+    
+    \PY{k}{for} \PY{n}{c} \PY{o+ow}{in} \PY{n}{composite}\PY{p}{:}
+        \PY{n}{execFor}\PY{p}{(}\PY{n}{algo}\PY{p}{,} \PY{n}{c}\PY{p}{,} \PY{k+kc}{False}\PY{p}{,}\PY{o}{*}\PY{o}{*}\PY{n}{kw}\PY{p}{)}
+    \PY{n+nb}{print}\PY{p}{(}\PY{n}{end}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+se}{\PYZbs{}n}\PY{l+s+se}{\PYZbs{}n}\PY{l+s+se}{\PYZbs{}n}\PY{l+s+se}{\PYZbs{}n}\PY{l+s+se}{\PYZbs{}n}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+
+
+
+
+is\_prime\_naive\_sqrt
+
+
+
+n = 3
+Mean exec. time of is\_prime\_naive\_sqrt:        0.000072797139486
+Std. of the exec. time of is\_prime\_naive\_sqrt: 0.000102950701963
+Result (is prime): True
+
+
+
+n = 17
+Mean exec. time of is\_prime\_naive\_sqrt:        0.000472466150920
+Std. of the exec. time of is\_prime\_naive\_sqrt: 0.000620576718758
+Result (is prime): True
+
+
+
+n = 101
+Mean exec. time of is\_prime\_naive\_sqrt:        0.000000000000000
+Std. of the exec. time of is\_prime\_naive\_sqrt: 0.000000000000000
+Result (is prime): True
+
+
+
+n = 1013
+Mean exec. time of is\_prime\_naive\_sqrt:        0.000000000000000
+Std. of the exec. time of is\_prime\_naive\_sqrt: 0.000000000000000
+Result (is prime): True
+
+
+
+n = 10099
+Mean exec. time of is\_prime\_naive\_sqrt:        0.000000000000000
+Std. of the exec. time of is\_prime\_naive\_sqrt: 0.000000000000000
+Result (is prime): True
+
+
+
+n = 103141
+Mean exec. time of is\_prime\_naive\_sqrt:        0.000333468119303
+Std. of the exec. time of is\_prime\_naive\_sqrt: 0.000471595136938
+Result (is prime): True
+
+
+
+n = 1016783
+Mean exec. time of is\_prime\_naive\_sqrt:        0.000333706537882
+Std. of the exec. time of is\_prime\_naive\_sqrt: 0.000471932311726
+Result (is prime): True
+
+
+
+n = 10103099
+Mean exec. time of is\_prime\_naive\_sqrt:        0.000999689102173
+Std. of the exec. time of is\_prime\_naive\_sqrt: 0.000000515042996
+Result (is prime): True
+
+
+
+n = 107707549
+Mean exec. time of is\_prime\_naive\_sqrt:        0.002011775970459
+Std. of the exec. time of is\_prime\_naive\_sqrt: 0.000802179071064
+Result (is prime): True
+
+
+
+n = 10770592813
+Mean exec. time of is\_prime\_naive\_sqrt:        0.017403602600098
+Std. of the exec. time of is\_prime\_naive\_sqrt: 0.008661672049070
+Result (is prime): True
+
+
+
+n = 107705911723
+Mean exec. time of is\_prime\_naive\_sqrt:        0.048722267150879
+Std. of the exec. time of is\_prime\_naive\_sqrt: 0.004345887830072
+Result (is prime): True
+
+
+
+n = 4547337172376300111955330758342147474062293202868155909489
+Mean exec. time of is\_prime\_naive\_sqrt:        inf
+Std. of the exec. time of is\_prime\_naive\_sqrt: nan
+Result (is prime): None
+
+
+
+n = 2
+Mean exec. time of is\_prime\_naive\_sqrt:        0.000332991282145
+Std. of the exec. time of is\_prime\_naive\_sqrt: 0.000470920787362
+Result (is prime): False
+
+
+
+n = 51
+Mean exec. time of is\_prime\_naive\_sqrt:        0.000332991282145
+Std. of the exec. time of is\_prime\_naive\_sqrt: 0.000470920787362
+Result (is prime): False
+
+
+
+n = 556
+Mean exec. time of is\_prime\_naive\_sqrt:        0.000333706537882
+Std. of the exec. time of is\_prime\_naive\_sqrt: 0.000471932311726
+Result (is prime): False
+
+
+
+n = 800001
+Mean exec. time of is\_prime\_naive\_sqrt:        0.000333309173584
+Std. of the exec. time of is\_prime\_naive\_sqrt: 0.000471370353746
+Result (is prime): False
+
+
+
+n = 101707
+Mean exec. time of is\_prime\_naive\_sqrt:        0.000333388646444
+Std. of the exec. time of is\_prime\_naive\_sqrt: 0.000471482745342
+Result (is prime): False
+
+
+
+n = 104872015403
+Mean exec. time of is\_prime\_naive\_sqrt:        0.008308410644531
+Std. of the exec. time of is\_prime\_naive\_sqrt: 0.008066211196677
+Result (is prime): False
+
+
+
+n = 1302227338984882027682141097
+Mean exec. time of is\_prime\_naive\_sqrt:        0.000000000000000
+Std. of the exec. time of is\_prime\_naive\_sqrt: 0.000000000000000
+Result (is prime): False
+
+
+
+n = 6570165603886230104742488179045
+Mean exec. time of is\_prime\_naive\_sqrt:        0.000000000000000
+Std. of the exec. time of is\_prime\_naive\_sqrt: 0.000000000000000
+Result (is prime): False
+
+
+
+n = 4547337172376300111955330758342147474062293202868155909393
+Mean exec. time of is\_prime\_naive\_sqrt:        inf
+Std. of the exec. time of is\_prime\_naive\_sqrt: nan
+Result (is prime): None
+
+
+
+
+
+
+
+
+
+
+
+
+is\_prime\_fermat
+
+
+
+n = 3
+k = 5
+Mean exec. time of is\_prime\_fermat:        0.000332832336426
+Std. of the exec. time of is\_prime\_fermat: 0.000470696004170
+Result (is prime): True
+
+
+
+n = 17
+k = 5
+Mean exec. time of is\_prime\_fermat:        0.000000000000000
+Std. of the exec. time of is\_prime\_fermat: 0.000000000000000
+Result (is prime): True
+
+
+
+n = 101
+k = 5
+Mean exec. time of is\_prime\_fermat:        0.000000000000000
+Std. of the exec. time of is\_prime\_fermat: 0.000000000000000
+Result (is prime): True
+
+
+
+n = 1013
+k = 5
+Mean exec. time of is\_prime\_fermat:        0.000333706537882
+Std. of the exec. time of is\_prime\_fermat: 0.000471932311726
+Result (is prime): True
+
+
+
+n = 10099
+k = 10
+Mean exec. time of is\_prime\_fermat:        0.000000000000000
+Std. of the exec. time of is\_prime\_fermat: 0.000000000000000
+Result (is prime): True
+
+
+
+n = 103141
+k = 103
+Mean exec. time of is\_prime\_fermat:        0.000333388646444
+Std. of the exec. time of is\_prime\_fermat: 0.000471482745342
+Result (is prime): True
+
+
+
+n = 1016783
+k = 1016
+Mean exec. time of is\_prime\_fermat:        0.000000000000000
+Std. of the exec. time of is\_prime\_fermat: 0.000000000000000
+Result (is prime): True
+
+
+
+n = 10103099
+k = 10000
+Mean exec. time of is\_prime\_fermat:        0.000000000000000
+Std. of the exec. time of is\_prime\_fermat: 0.000000000000000
+Result (is prime): True
+
+
+
+n = 107707549
+k = 10000
+Mean exec. time of is\_prime\_fermat:        0.000000000000000
+Std. of the exec. time of is\_prime\_fermat: 0.000000000000000
+Result (is prime): True
+
+
+
+n = 10770592813
+k = 10000
+Mean exec. time of is\_prime\_fermat:        0.000000000000000
+Std. of the exec. time of is\_prime\_fermat: 0.000000000000000
+Result (is prime): True
+
+
+
+n = 107705911723
+k = 10000
+Mean exec. time of is\_prime\_fermat:        0.000336329142253
+Std. of the exec. time of is\_prime\_fermat: 0.000475641234395
+Result (is prime): True
+
+
+
+n = 4547337172376300111955330758342147474062293202868155909489
+k = 10000
+Mean exec. time of is\_prime\_fermat:        0.000333627065023
+Std. of the exec. time of is\_prime\_fermat: 0.000471819920130
+Result (is prime): True
+
+
+
+n = 2
+k = 10000
+Mean exec. time of is\_prime\_fermat:        0.000000000000000
+Std. of the exec. time of is\_prime\_fermat: 0.000000000000000
+Result (is prime): True
+
+
+
+n = 51
+k = 10000
+Mean exec. time of is\_prime\_fermat:        0.000343958536784
+Std. of the exec. time of is\_prime\_fermat: 0.000486430827614
+Result (is prime): False
+
+
+
+n = 556
+k = 10000
+Mean exec. time of is\_prime\_fermat:        0.000000000000000
+Std. of the exec. time of is\_prime\_fermat: 0.000000000000000
+Result (is prime): False
+
+
+
+n = 800001
+k = 10000
+Mean exec. time of is\_prime\_fermat:        0.000333468119303
+Std. of the exec. time of is\_prime\_fermat: 0.000471595136938
+Result (is prime): False
+
+
+
+n = 101707
+k = 10000
+Mean exec. time of is\_prime\_fermat:        0.000000000000000
+Std. of the exec. time of is\_prime\_fermat: 0.000000000000000
+Result (is prime): False
+
+
+
+n = 104872015403
+k = 10000
+Mean exec. time of is\_prime\_fermat:        0.000000000000000
+Std. of the exec. time of is\_prime\_fermat: 0.000000000000000
+Result (is prime): False
+
+
+
+n = 1302227338984882027682141097
+k = 10000
+Mean exec. time of is\_prime\_fermat:        0.000000000000000
+Std. of the exec. time of is\_prime\_fermat: 0.000000000000000
+Result (is prime): False
+
+
+
+n = 6570165603886230104742488179045
+k = 10000
+Mean exec. time of is\_prime\_fermat:        0.000000000000000
+Std. of the exec. time of is\_prime\_fermat: 0.000000000000000
+Result (is prime): False
+
+
+
+n = 4547337172376300111955330758342147474062293202868155909393
+k = 10000
+Mean exec. time of is\_prime\_fermat:        0.000333627065023
+Std. of the exec. time of is\_prime\_fermat: 0.000471819920130
+Result (is prime): False
+
+
+
+
+
+
+
+
+
+
+
+
+is\_prime\_miller\_rabin
+
+
+
+n = 3
+k = 5
+Mean exec. time of is\_prime\_miller\_rabin:        0.000332911809285
+Std. of the exec. time of is\_prime\_miller\_rabin: 0.000470808395766
+Result (is prime): True
+
+
+
+n = 17
+k = 5
+Mean exec. time of is\_prime\_miller\_rabin:        0.000333627065023
+Std. of the exec. time of is\_prime\_miller\_rabin: 0.000471819920130
+Result (is prime): True
+
+
+
+n = 101
+k = 5
+Mean exec. time of is\_prime\_miller\_rabin:        0.000000000000000
+Std. of the exec. time of is\_prime\_miller\_rabin: 0.000000000000000
+Result (is prime): True
+
+
+
+n = 1013
+k = 5
+Mean exec. time of is\_prime\_miller\_rabin:        0.000000000000000
+Std. of the exec. time of is\_prime\_miller\_rabin: 0.000000000000000
+Result (is prime): True
+
+
+
+n = 10099
+k = 10
+Mean exec. time of is\_prime\_miller\_rabin:        0.000333547592163
+Std. of the exec. time of is\_prime\_miller\_rabin: 0.000471707528534
+Result (is prime): True
+
+
+
+n = 103141
+k = 103
+Mean exec. time of is\_prime\_miller\_rabin:        0.000333627065023
+Std. of the exec. time of is\_prime\_miller\_rabin: 0.000471819920130
+Result (is prime): True
+
+
+
+n = 1016783
+k = 1016
+Mean exec. time of is\_prime\_miller\_rabin:        0.001750469207764
+Std. of the exec. time of is\_prime\_miller\_rabin: 0.000353022056800
+Result (is prime): True
+
+
+
+n = 10103099
+k = 10000
+Mean exec. time of is\_prime\_miller\_rabin:        0.016447941462199
+Std. of the exec. time of is\_prime\_miller\_rabin: 0.003575988144905
+Result (is prime): True
+
+
+
+n = 107707549
+k = 10000
+Mean exec. time of is\_prime\_miller\_rabin:        0.029217481613159
+Std. of the exec. time of is\_prime\_miller\_rabin: 0.007746362956345
+Result (is prime): True
+
+
+
+n = 10770592813
+k = 10000
+Mean exec. time of is\_prime\_miller\_rabin:        0.051224470138550
+Std. of the exec. time of is\_prime\_miller\_rabin: 0.005072631972207
+Result (is prime): True
+
+
+
+n = 107705911723
+k = 10000
+Mean exec. time of is\_prime\_miller\_rabin:        0.053974310557048
+Std. of the exec. time of is\_prime\_miller\_rabin: 0.006351865865977
+Result (is prime): True
+
+
+
+n = 4547337172376300111955330758342147474062293202868155909489
+k = 10000
+Mean exec. time of is\_prime\_miller\_rabin:        0.599021275838216
+Std. of the exec. time of is\_prime\_miller\_rabin: 0.005035179729445
+Result (is prime): True
+
+
+
+n = 2
+k = 10000
+Mean exec. time of is\_prime\_miller\_rabin:        0.000332911809285
+Std. of the exec. time of is\_prime\_miller\_rabin: 0.000470808395766
+Result (is prime): False
+
+
+
+n = 51
+k = 10000
+Mean exec. time of is\_prime\_miller\_rabin:        0.000000000000000
+Std. of the exec. time of is\_prime\_miller\_rabin: 0.000000000000000
+Result (is prime): False
+
+
+
+n = 556
+k = 10000
+Mean exec. time of is\_prime\_miller\_rabin:        0.000000000000000
+Std. of the exec. time of is\_prime\_miller\_rabin: 0.000000000000000
+Result (is prime): False
+
+
+
+n = 800001
+k = 10000
+Mean exec. time of is\_prime\_miller\_rabin:        0.000333388646444
+Std. of the exec. time of is\_prime\_miller\_rabin: 0.000471482745342
+Result (is prime): False
+
+
+
+n = 101707
+k = 10000
+Mean exec. time of is\_prime\_miller\_rabin:        0.000333070755005
+Std. of the exec. time of is\_prime\_miller\_rabin: 0.000471033178958
+Result (is prime): False
+
+
+
+n = 104872015403
+k = 10000
+Mean exec. time of is\_prime\_miller\_rabin:        0.000000000000000
+Std. of the exec. time of is\_prime\_miller\_rabin: 0.000000000000000
+Result (is prime): False
+
+
+
+n = 1302227338984882027682141097
+k = 10000
+Mean exec. time of is\_prime\_miller\_rabin:        0.000333388646444
+Std. of the exec. time of is\_prime\_miller\_rabin: 0.000471482745342
+Result (is prime): False
+
+
+
+n = 6570165603886230104742488179045
+k = 10000
+Mean exec. time of is\_prime\_miller\_rabin:        0.000333388646444
+Std. of the exec. time of is\_prime\_miller\_rabin: 0.000471482745342
+Result (is prime): False
+
+
+
+n = 4547337172376300111955330758342147474062293202868155909393
+k = 10000
+Mean exec. time of is\_prime\_miller\_rabin:        0.000000000000000
+Std. of the exec. time of is\_prime\_miller\_rabin: 0.000000000000000
+Result (is prime): False
+
+
+
+
+
+
+
+
+    \end{Verbatim}
+
+    \hypertarget{textbfconclusions}{%
+\paragraph{\texorpdfstring{\[\textbf{Conclusions}\]}{\textbackslash textbf\{Conclusions\}}}\label{textbfconclusions}}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  Test Millera-Rabina jest probabilistycznym testem pierwszości, pozwala
+  z dużym prawdopodobieństwem stwierdzić, czy dana liczba jest liczbą
+  pierwszą. Jest znacznie szybszy w porównaniu z nieprobabilistycznym
+  testem pierwszości pierwiastka kwadratowego, a dokładność wyników
+  testu można określić i zmienić. Ten test wyróżnia się w analizie
+  pierwszorzędności dużych liczb (np. \textgreater1e6), ze względu na
+  skrócony czas wykonania i zużycie zasobów. Wadą jest to, że jego
+  wyniki nie są jednoznaczne z prawdopodobieństwem 100\%. Niemniej
+  jednak test Millera-Rabina jest powszechnie znany i stosowany. To jest
+  uważany za klasyczny test pierwszości.
+\item
+  Fermat test (conclusions)
+\item
+  Square root test (conclusions)
+\end{enumerate}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{ }{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+
+\end{Verbatim}
+\end{tcolorbox}
+
+
+    % Add a bibliography block to the postdoc
+    
+    
+    
+\end{document}

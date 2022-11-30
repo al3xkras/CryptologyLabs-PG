@@ -58,4 +58,15 @@ if __name__ == '__main__':
         assert is_prime_miller_rabin(4547337172376300111955330758342147474062293202868155909489,30000) is True
         assert is_prime_miller_rabin(4547337172376300111955330758342147474062293202868155909393, 30000) is False
     test_miller_rabin()
+    """
+    Conclusions: the Miller-Rabin test is a probabilistic primality test, that
+        allows to determine if a given number is prime with a high probability.
+        It is much faster in comparison to the non-probabilistic square root primality test,
+        and the accuracy of the test results can be specified and changed.
+        This test excels in the primality analysis of large numbers (e.g. >1e6),
+        because of the reduced execution time and resource consumption,
+        however its results are not definite with a probability of 100%.
+        Nevertheless, the Miller-Rabin test is widely known and used. It is considered a classic
+        primality test.
+    """
 

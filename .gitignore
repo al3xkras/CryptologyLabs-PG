@@ -5,6 +5,10 @@
 /tmp
 **/.ipynb_checkpoints
 /Lab2/*.txt
+Lab7/*.bin
+Lab7/tmp
+Lab7/*.zip
+
 HELP.md
 target/
 !.mvn/wrapper/maven-wrapper.jar

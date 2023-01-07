@@ -15,34 +15,23 @@ def find_key(first_line_plain, first_line_encoded):
     fp,fe=first_line_plain,first_line_encoded
     key_length=12
     encode = lambda image, _key: algorytm.blokowy(image, image.load(), None, _key, 1)
-    decode = lambda image, _key: algorytm.blokowy(image, image.load(), None, _key, 0)
 
     b2 = np.asarray(fe)
-    debug=False
     keys=[None,None,None]
     for k in range(pow(2,key_length)):
         key_bin=str(bin(k))[2:]
         if len(key_bin)<key_length:
             key_bin+="0"*(key_length-len(key_bin))
         b1=np.asarray(encode(fp.copy(),key_bin))
-        b11=np.asarray(decode(fe.copy(),key_bin))
-        if debug:
-            print(b1==b2)
-            print()
-            if k>20:break
+        k=0
         for i in range(len(keys)):
-            if keys[i] is not None:
-                continue
             if colors_equal(b1, b2, i):
-                keys[i]=key_bin+"decode"
-                print(keys)
-            elif colors_equal(b11, b2, i):
-                keys[i]=key_bin+"encode"
-                print(keys)
-        if all(keys):
-            return keys
-
-    raise Exception("key not found")
+                k+=1
+                keys[i]=key_bin
+        if k==3:
+            return keys[0]
+    print("key not found for >=1 color.")
+    return keys
 
 if __name__ == '__main__':
     fname_plain=None#input("file name (plain): ")
@@ -62,4 +51,4 @@ if __name__ == '__main__':
     ))
 
     key = find_key(first_line_plain,first_line_encoded)
-    print("possible keys: ",key)
+    print("possible key: ",key)

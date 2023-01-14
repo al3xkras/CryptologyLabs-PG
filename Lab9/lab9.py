@@ -1,5 +1,30 @@
 import random
-random.seed(105928893)
+
+class Shuffler:
+    def __init__(self,key):
+        random.seed(105928893)
+        key_len=len(key)
+        self.key_len=key_len
+        self.perm=list(range(key_len))
+        perm=self.perm
+        random.shuffle(perm)
+        self.perm_inv=[perm.index(i) for i in range(key_len)]
+
+    def shuffle(self, binary:bytes):
+        sh=bytearray()
+        if len(binary)<self.key_len:
+            binary+=b'\x00'*(self.key_len-len(binary))
+        for val in self.perm:
+            sh.append(binary[val])
+        return bytes(sh)
+
+    def shuffle_inv(self, binary:bytes):
+        sh=bytearray()
+        if len(binary)<self.key_len:
+            binary+=b'\x00'*(self.key_len-len(binary))
+        for val in self.perm_inv:
+            sh.append(binary[val])
+        return bytes(sh)
 
 def binary_op(L:bytes, R:bytes,method):
     assert len(L)==len(R)
@@ -18,6 +43,10 @@ def next_key(key:bytes):
     for b in b_arr:
         key_n.append((pow(b,2,300)+10)%256)
     return bytes(key_n)
+
+def permutation(data:bytes,key:bytes):
+    random.seed(key)
+
 
 def F(block:bytes, key:bytes):
     res=bytearray()
@@ -56,14 +85,32 @@ def block_cipher_binary(binary: bytes, key: bytes, decode=False):
     for i in range(count):
         k=key if not decode else key_lst[i]
         res=feistel_cipher(res,k,swap=i!=count-1)
-        print(k)
         key=key_fun(key)
     if decode:
         return swap_lr(res)
     return res
 
-def block_t(text: str, key: bytes):
-    return block_cipher_binary(bytes(text), key)
+def block_t(text, key: bytes, decode=False):
+    if not isinstance(text,bytes):
+        text=str.encode(text)
+    sh=Shuffler(key)
+    data=text[:(len(text)-len(text)%len(key))]
+    remainder=text[(len(text)-len(text)%len(key)):]
+    out=bytearray()
+    for i in range(0,len(data),len(key)):
+        data_i=data[i:i+len(key)]
+        if not decode:
+            data_i_proc=block_cipher_binary(data_i,key,decode)
+            data_i_proc=sh.shuffle(data_i_proc)
+        else:
+            data_i_proc = sh.shuffle_inv(data_i)
+            data_i_proc = block_cipher_binary(data_i_proc, key, decode)
+        out+=data_i_proc
+    out=bytes(out)
+    if len(remainder)==0:
+        return out
+    rem=block_t(remainder,key[:len(remainder)],decode=decode)
+    return out+rem
 
 def block_p(image, key: bytes):
     return block_cipher_binary(bytes(image), key)
@@ -80,3 +127,11 @@ if __name__ == '__main__':
     print("dec",decoded)
     decoded = block_cipher_binary(encoded, b"04jr22d34d", decode=True)
     print("dec", decoded)
+
+    print("key:",b_key)
+    text="text12444t54456htext12444t54456h"
+    print("text:",text)
+    r=block_t(text,b_key)
+    print("encoded text:",r)
+    r_=block_t(r,b_key,True)
+    print("decoded text:",r_)

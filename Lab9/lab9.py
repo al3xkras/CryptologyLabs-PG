@@ -1,8 +1,9 @@
 import random
+from PIL import Image
 
 class Shuffler:
     def __init__(self,key):
-        random.seed(105928893)
+        random.seed(23498754298122)
         key_len=len(key)
         self.key_len=key_len
         self.perm=list(range(key_len))
@@ -44,15 +45,13 @@ def next_key(key:bytes):
         key_n.append((pow(b,2,300)+10)%256)
     return bytes(key_n)
 
-def permutation(data:bytes,key:bytes):
-    random.seed(key)
-
-
 def F(block:bytes, key:bytes):
     res=bytearray()
     i=0
+    last_byte=0
     for byte in block:
-        res.append((byte^key[i]+i+pow(i,5,12))%256)
+        res.append((last_byte+byte^key[i]+2*i+pow(i,5,12))%256)
+        last_byte=byte
         i=(i+1)%len(key)
     return bytes(res)
 
@@ -67,14 +66,9 @@ def feistel_cipher(binary:bytes, key:bytes,swap=True):
     return bytes(bytearray(L1) + bytearray(R1)+bytearray(remainder)) if swap else\
                 bytes(bytearray(R1) + bytearray(L1)+bytearray(remainder))
 
-def swap_lr(binary:bytes):
-    _len = len(binary)
-    # return bytes(bytearray(binary[_len:2 * _len]) + bytearray(binary[0:_len]))
-    return binary
-
 def block_cipher_binary(binary: bytes, key: bytes, decode=False):
     res=binary
-    count=17
+    count=8
     key_fun=next_key
     key_lst=[key]
     if decode:
@@ -86,16 +80,14 @@ def block_cipher_binary(binary: bytes, key: bytes, decode=False):
         k=key if not decode else key_lst[i]
         res=feistel_cipher(res,k,swap=i!=count-1)
         key=key_fun(key)
-    if decode:
-        return swap_lr(res)
     return res
 
-def block_t(text, key: bytes, decode=False):
-    if not isinstance(text,bytes):
-        text=str.encode(text)
+def block_cipher_binary_perm(binary, key: bytes, decode=False):
+    if not isinstance(binary, bytes):
+        binary=str.encode(binary)
     sh=Shuffler(key)
-    data=text[:(len(text)-len(text)%len(key))]
-    remainder=text[(len(text)-len(text)%len(key)):]
+    data= binary[:(len(binary) - len(binary) % len(key))]
+    remainder= binary[(len(binary) - len(binary) % len(key)):]
     out=bytearray()
     for i in range(0,len(data),len(key)):
         data_i=data[i:i+len(key)]
@@ -109,11 +101,17 @@ def block_t(text, key: bytes, decode=False):
     out=bytes(out)
     if len(remainder)==0:
         return out
-    rem=block_t(remainder,key[:len(remainder)],decode=decode)
+    rem=block_cipher_binary_perm(remainder, key[:len(remainder)], decode=decode)
     return out+rem
 
-def block_p(image, key: bytes):
-    return block_cipher_binary(bytes(image), key)
+def block_t(text,key:bytes,decode=False):
+    return block_cipher_binary_perm(text,key,decode)
+
+def block_p(image, key: bytes,decode=False):
+    if not isinstance(image,bytes):
+        image=image.tobytes()
+    return block_cipher_binary(image, key,decode)
+
 
 if __name__ == '__main__':
     b1=bytes(b"some data to encode")
@@ -129,9 +127,18 @@ if __name__ == '__main__':
     print("dec", decoded)
 
     print("key:",b_key)
-    text="text12444t54456htext12444t54456h"
+    text=b"text12444t54456htext12444t54456h"
     print("text:",text)
-    r=block_t(text,b_key)
+    r=block_t(text, b_key)
     print("encoded text:",r)
-    r_=block_t(r,b_key,True)
+    r_=block_t(r, b_key, True)
     print("decoded text:",r_)
+
+    key=b"23052808289__4t490dp___800129470192f790KHHOdmowdlofihem09__mmmMdx71f07921f701917fca886atextxxd44t5xext1fFlsF4t54456h"
+    image=Image.open("image.bmp")
+    encoded=block_p(image,key)
+    im_enc = Image.frombytes("RGB", (250, 141), encoded)
+    im_enc.save("image_encoded.bmp")
+    decoded=block_p(encoded,key,decode=True)
+    im_dec=Image.frombytes("RGB",(250,141),decoded)
+    im_dec.save("image_decoded.bmp")

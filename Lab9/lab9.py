@@ -110,7 +110,7 @@ def block_t(text,key:bytes,decode=False):
 def block_p(image, key: bytes,decode=False):
     if not isinstance(image,bytes):
         image=image.tobytes()
-    return block_cipher_binary(image, key,decode)
+    return block_cipher_binary_perm(image, key,decode)
 
 
 if __name__ == '__main__':
@@ -123,7 +123,7 @@ if __name__ == '__main__':
     print("enc",encoded)
     decoded=block_cipher_binary(encoded,b_key,decode=True)
     print("dec",decoded)
-    decoded = block_cipher_binary(encoded, b"04jr22d34d", decode=True)
+    decoded = block_cipher_binary(encoded, b"04jr20d34d", decode=True)
     print("dec", decoded)
 
     print("key:",b_key)
@@ -134,11 +134,13 @@ if __name__ == '__main__':
     r_=block_t(r, b_key, True)
     print("decoded text:",r_)
 
-    key=b"23052808289__4t490dp___800129470192f790KHHOdmowdlofihem09__mmmMdx71f07921f701917fca886atextxxd44t5xext1fFlsF4t54456h"
-    image=Image.open("image.bmp")
-    encoded=block_p(image,key)
-    im_enc = Image.frombytes("RGB", (250, 141), encoded)
-    im_enc.save("image_encoded.bmp")
-    decoded=block_p(encoded,key,decode=True)
-    im_dec=Image.frombytes("RGB",(250,141),decoded)
-    im_dec.save("image_decoded.bmp")
+    enc_image=False
+    if enc_image:
+        key=b"23052808289__4t490dp___800129470192f790KHHOdmowdlofihem09__mmmMdx71f07921f701917fca886atextxxd44t5xext1fFlsF4t54456h"
+        image=Image.open("image.bmp")
+        encoded=block_p(image,key)
+        im_enc = Image.frombytes("RGB", (250, 141), encoded)
+        im_enc.save("image_encoded.bmp")
+        decoded=block_p(encoded,key,decode=True)
+        im_dec=Image.frombytes("RGB",(250,141),decoded)
+        im_dec.save("image_decoded.bmp")
